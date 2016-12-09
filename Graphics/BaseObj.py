@@ -1,0 +1,174 @@
+# coding=utf-8
+
+import pygame
+import PIL.Image as IPIL
+
+# Основной класс
+class GraphicObject(pygame.sprite.Sprite):
+
+    def __init__(self, x, y, width, height, color='#FF0000'):
+        super(GraphicObject, self).__init__()
+
+        self.image = pygame.Surface([width, height])
+
+        if type(color) == str:
+            self.color = pygame.Color(color)
+        else:
+            self.color = color
+        self.image.fill(self.color)
+
+        self.rect = self.image.get_rect()
+        self.rect.x = x
+        self.rect.y = y
+
+    def LoadImage(self, path_to_img):
+        x, y = self.rect.x, self.rect.y
+        self.image = pygame.image.load(path_to_img)
+        self.rect = self.image.get_rect()
+        self.rect.x, self.rect.y = x, y
+
+    def setSurface(self, surface):
+        x, y = self.rect.x, self.rect.y
+        self.image = surface
+        self.rect = self.image.get_rect()
+        self.rect.x, self.rect.y = x, y
+
+
+    def draw(self,screen):
+        screen.blit (self.image, (self.rect.x, self.rect.y))
+
+class ImgLoad (object):
+    def __init__(self, imgpath):
+        self.fullimg = pygame.image.load(imgpath)
+
+        self.cut = []
+
+    def cutSprite (self, *spritelist):
+        self.cut = spritelist
+
+    def retCut (self):
+        return self.cut
+
+    def retImage (self):
+        return self.fullimg
+
+# Класс этот будет храниться в памяти пока не закроется программа.
+# Я это сделал потому, что тайлы и спрайты нужны протяжении всей игры.
+class ImgEditClass(object):
+    def __init__(self, path):
+        self.img = IPIL.open(path)
+
+    # Вырезка спрайта или тайла из картинки или атласа
+    def cut_image(self, startposX, startposY, width, height):
+        cutted = self.img.crop((startposX, startposY, startposX+width, startposY+height))
+        return cutted
+
+    # Конвертирование в self.Surface. Да, да, можно и по другому, но это ж PIL!
+    def convert_to_surface(self):
+        mode = self.img.mode
+        size = self.img.size
+        data = self.img.tobytes()
+        return pygame.image.frombuffer(data, size, mode)
+
+    #Статика, "посмотреть картинку", открвыем и смотрим на что мы там наделали
+    # file = ImgClass ('file.png')
+    # file.show (file.cut_image)
+    @staticmethod
+    def show(img):
+        img.show()
+
+# Объкеденение кусков в один прекрасный background, зачем? Потому что собрать проще чем рисовать
+class UniteImg (object):
+    def __init__(self, resolutionX, resolutionY, *images):
+        self.Unite = IPIL.new("RGBA", (resolutionX, resolutionY), (0, 0, 0, 0))
+        place = [0,0]
+        for image in images:
+            self.Unite.paste(image, (place[0], place[1]))
+            if place[0]+ image.size[0] < 640:
+                place [0] += image.size[0]
+            else:
+                place[0] = 0
+                if place[1]+image.size[1] < 480:
+                    place[1] += image.size[1]
+                else:
+                    break
+
+    def convert_to_surface(self):
+        mode = self.Unite.mode
+        size = self.Unite.size
+        data = self.Unite.tobytes()
+        return pygame.image.frombuffer(data, size, mode)
+
+
+# Объединение спрайтов в группу
+class UniteSprite (pygame.sprite.Group):
+    def __init__(self, *sprites):
+        pass
+
+# Статический спрайт
+class StaticSprite (GraphicObject):
+    def __init__(self, x, y, width, height, color):
+        super(StaticSprite, self).__init__(x, y, width, height, color)
+        self.hits = -1 # -1 - не убиваемый блок, 0 - прозрачный блок (кусты) - остальное можно уничтожить (HP)
+
+
+# Анимация объекта
+class AnimatedSprite(UniteSprite):
+    def __init__(self, *sprites):
+        super(AnimatedSprite, self).__init__(*sprites)
+
+
+# Cетка для отладки и визуального представления
+class Net (object):
+    def __init__(self, tileWidthHeight = (32,32), line_width = 10):
+        self.net = pygame.sprite.Group()
+        self.tile_WidthHeight = tileWidthHeight
+        self.line_width = line_width
+
+    # Эта функция позволяет рисовать сетку зная ширину и высоту сетки в пикселях
+    def print_on_resolution (self, startXYpos =[0,0], endPoint = (640,480)):
+
+        getoldpost = [startXYpos[0], startXYpos[1]]
+
+        # Считаем пустое пространство в ячейках
+        empty_block_part = (self.tile_WidthHeight[0]-self.line_width, self.tile_WidthHeight[1]-self.line_width)
+
+        # Считаем количество блоков
+        blocknum = (endPoint[0]/self.tile_WidthHeight[0], endPoint[1]/self.tile_WidthHeight[1])
+
+        # Рисуем линии
+        for i in range(1,blocknum[0] + 1, 1):
+            self.net.add(GraphicObject (startXYpos[0], startXYpos[1],self.line_width, empty_block_part[0]*(blocknum[1])))
+            startXYpos[0] += empty_block_part[0]
+        self.net.add(GraphicObject(startXYpos[0], startXYpos[1], self.line_width, empty_block_part[0] * (blocknum[1])+self.line_width))
+
+        # Рисуем линии, чтобы сетка была сеткой
+        startXYpos = getoldpost
+        for i in range(1, blocknum[1] + 1, 1):
+            self.net.add(GraphicObject(startXYpos[0], startXYpos[1], empty_block_part[1] * (blocknum[0]), self.line_width))
+            startXYpos[1] += empty_block_part[1]
+        self.net.add(GraphicObject(startXYpos[0], startXYpos[1], empty_block_part[1] * (blocknum[0]), self.line_width))
+
+        # Эта функция позволяет рисовать сетку тайлами
+    def printOnTiles (self, startXYpos = [0,0], block_num = (20,15)):
+        getoldpost = [startXYpos[0], startXYpos[1]]
+        # Считаем пустое пространство в ячейках
+        empty_block_part = (self.tile_WidthHeight[0] - self.line_width, self.tile_WidthHeight[1] - self.line_width)
+        # Рисуем линии
+        for i in range(1, block_num[0] + 1, 1):
+            self.net.add(
+                GraphicObject(startXYpos[0], startXYpos[1], self.line_width, empty_block_part[0] * (block_num[1])))
+            startXYpos[0] += empty_block_part[0]
+        self.net.add(GraphicObject(startXYpos[0], startXYpos[1], self.line_width,
+                                   empty_block_part[0] * (block_num[1]) + self.line_width))
+        # Рисуем линии, чтобы сетка была сеткой
+        startXYpos = getoldpost
+        for i in range(1, block_num[1] + 1, 1):
+            self.net.add(
+                GraphicObject(startXYpos[0], startXYpos[1], empty_block_part[1] * (block_num[0]), self.line_width))
+            startXYpos[1] += empty_block_part[1]
+        self.net.add(GraphicObject(startXYpos[0], startXYpos[1], empty_block_part[1] * (block_num[0]), self.line_width))
+
+    def draw (self, screen):
+        self.net.draw(screen)
+

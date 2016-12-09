@@ -1,0 +1,29 @@
+!prepare!
+staticbg_X = 0;
+staticbg_Y = 0;
+game_field_X = 0; # rect pos X
+game_field_Y = 0; # rect pos Y
+netX = 200;
+netY = 100;
+sprite_folder  = '../sprite';
+effects_folder = '../sound';
+is_sprite_in_atlas = 0;
+hitsPlayer = 100;
+hitsEnemy1 = 50;
+hitsEnemy2 = 50;
+hitsEnemy3 = 50;
+bonus_time = 10;# sec
+static_bonus_time = 30;#sec
+!sprites!
+player = {s_move_up:'',s_move_down:''};
+Enemy1 = {respawn = (0,0){3}}; #respawn in cells
+Enemy2 = {};
+tree = {};
+bounus = {};
+!mapa!
+genmapa = {tree(0,0){3}};
+!sound!
+change = 100;
+!changes!
+do = 100;
+
