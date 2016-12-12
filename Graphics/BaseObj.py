@@ -3,23 +3,21 @@
 import pygame
 import PIL.Image as IPIL
 
-# Основной класс
+
+# Основной класс для графики
 class GraphicObject(pygame.sprite.Sprite):
 
     def __init__(self, x, y, width, height, color='#FF0000'):
         super(GraphicObject, self).__init__()
-
         self.image = pygame.Surface([width, height])
-
         if type(color) == str:
             self.color = pygame.Color(color)
         else:
             self.color = color
-        self.image.fill(self.color)
-
         self.rect = self.image.get_rect()
         self.rect.x = x
         self.rect.y = y
+        self.image.fill(self.color)
 
     def LoadImage(self, path_to_img):
         x, y = self.rect.x, self.rect.y
@@ -33,35 +31,21 @@ class GraphicObject(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.rect.x, self.rect.y = x, y
 
-
-    def draw(self,screen):
+    def draw(self, screen):
         screen.blit (self.image, (self.rect.x, self.rect.y))
 
-class ImgLoad (object):
-    def __init__(self, imgpath):
-        self.fullimg = pygame.image.load(imgpath)
-
-        self.cut = []
-
-    def cutSprite (self, *spritelist):
-        self.cut = spritelist
-
-    def retCut (self):
-        return self.cut
-
-    def retImage (self):
-        return self.fullimg
 
 # Класс этот будет храниться в памяти пока не закроется программа.
 # Я это сделал потому, что тайлы и спрайты нужны протяжении всей игры.
 class ImgEditClass(object):
     def __init__(self, path):
         self.img = IPIL.open(path)
+        self.size = self.img.size
 
     # Вырезка спрайта или тайла из картинки или атласа
     def cut_image(self, startposX, startposY, width, height):
         cutted = self.img.crop((startposX, startposY, startposX+width, startposY+height))
-        return cutted
+        return pygame.image.frombuffer(cutted.tobytes(), cutted.size, cutted.mode)
 
     # Конвертирование в self.Surface. Да, да, можно и по другому, но это ж PIL!
     def convert_to_surface(self):
@@ -70,15 +54,16 @@ class ImgEditClass(object):
         data = self.img.tobytes()
         return pygame.image.frombuffer(data, size, mode)
 
-    #Статика, "посмотреть картинку", открвыем и смотрим на что мы там наделали
+    # Статика, "посмотреть картинку", открвыем и смотрим на что мы там наделали
     # file = ImgClass ('file.png')
     # file.show (file.cut_image)
     @staticmethod
     def show(img):
         img.show()
 
+
 # Объкеденение кусков в один прекрасный background, зачем? Потому что собрать проще чем рисовать
-class UniteImg (object):
+class UniteImg(object):
     def __init__(self, resolutionX, resolutionY, *images):
         self.Unite = IPIL.new("RGBA", (resolutionX, resolutionY), (0, 0, 0, 0))
         place = [0,0]
@@ -101,22 +86,40 @@ class UniteImg (object):
 
 
 # Объединение спрайтов в группу
-class UniteSprite (pygame.sprite.Group):
-    def __init__(self, *sprites):
-        pass
+class UniteSprite(pygame.sprite.Group):
+    def __init__(self, *sprites): pass
+
 
 # Статический спрайт
-class StaticSprite (GraphicObject):
+class StaticSprite(GraphicObject):
     def __init__(self, x, y, width, height, color):
         super(StaticSprite, self).__init__(x, y, width, height, color)
-        self.hits = -1 # -1 - не убиваемый блок, 0 - прозрачный блок (кусты) - остальное можно уничтожить (HP)
+        self.health = -1
 
+        # -1 - не убиваемый блок, 0 - прозрачный блок (кусты) - остальное можно уничтожить (HP)
 
-# Анимация объекта
-class AnimatedSprite(UniteSprite):
-    def __init__(self, *sprites):
-        super(AnimatedSprite, self).__init__(*sprites)
+class AnimatetdSprite(StaticSprite):
+    def __init__(self, x, y, width, height, color='#00ff00'):
+        super(AnimatetdSprite, self).__init__(x, y, width, height, color)
+        self.anim_block = []
+        self.clip = 0
 
+    # Создание списка анимаций
+    def set_animation_list(self, *imglink):
+        for img in imglink:
+            self.anim_block.append(img)
+        self.image = self.anim_block[0]
+
+    def ret_animblock (self):
+        return self.anim_block
+
+    # Анимация кадра
+    def animate(self):
+        if self.clip < len(self.anim_block):
+            self.image = self.anim_block[self.clip]
+            self.clip += 1
+        else:
+            self.clip = 0
 
 # Cетка для отладки и визуального представления
 class Net (object):
@@ -171,4 +174,3 @@ class Net (object):
 
     def draw (self, screen):
         self.net.draw(screen)
-
