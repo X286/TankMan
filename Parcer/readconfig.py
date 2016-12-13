@@ -6,7 +6,8 @@ class parcer(object):
     def __init__(self, f_path):
         self.parced = file(f_path, 'r')
 
-    def preread_first (self): #первое чтение, разбиение его в словарь для обработки
+    # первое чтение, разбиение его в словарь для обработки
+    def preread_first (self):
         self.parced.seek(0)
         output_dict, key = {}, ''
         for line in self.parced:
@@ -29,7 +30,8 @@ class parcer(object):
 
         return output_dict
 
-    def extended_split_dict(self):#разбиение на элементы и частичное приведение к типам
+    # разбиение на элементы и частичное приведение к типам
+    def extended_split_dict(self):
         dict = self.preread_first()
         for key in dict.keys():
             subdict = {}
@@ -45,7 +47,8 @@ class parcer(object):
             dict[key] = subdict
         return dict
 
-    def expandread (self): #расширенное разбиение на элементы.
+    # расширенное разбиение на элементы.
+    def expandread (self):
         dict_ex = self.extended_split_dict()
         return dict_ex
 

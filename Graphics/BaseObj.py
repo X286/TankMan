@@ -4,7 +4,7 @@ import pygame
 import PIL.Image as IPIL
 
 
-# Основной класс для графики
+# Основной класс для графики, он же основной задник
 class GraphicObject(pygame.sprite.Sprite):
 
     def __init__(self, x, y, width, height, color='#FF0000'):
@@ -62,7 +62,7 @@ class ImgEditClass(object):
         img.show()
 
 
-# Объкеденение кусков в один прекрасный background, зачем? Потому что собрать проще чем рисовать
+# Объеденение кусков в один прекрасный background, зачем? Потому что собрать проще чем рисовать
 class UniteImg(object):
     def __init__(self, resolutionX, resolutionY, *images):
         self.Unite = IPIL.new("RGBA", (resolutionX, resolutionY), (0, 0, 0, 0))
@@ -85,26 +85,31 @@ class UniteImg(object):
         return pygame.image.frombuffer(data, size, mode)
 
 
-# Объединение спрайтов в группу
+# Объединение спрайтов в группу,  остальное из pygame.sprite.Group
 class UniteSprite(pygame.sprite.Group):
-    def __init__(self, *sprites): pass
+    def __init__(self, *sprites):
+        super(UniteSprite, self).__init__()
+        self.add(sprites)
+
 
 
 # Статический спрайт
 class StaticSprite(GraphicObject):
     def __init__(self, x, y, width, height, color):
         super(StaticSprite, self).__init__(x, y, width, height, color)
-        self.health = -1
 
-        # -1 - не убиваемый блок, 0 - прозрачный блок (кусты) - остальное можно уничтожить (HP)
 
+
+# Анимированный спрайт
 class AnimatetdSprite(StaticSprite):
     def __init__(self, x, y, width, height, color='#00ff00'):
         super(AnimatetdSprite, self).__init__(x, y, width, height, color)
+        # блок анимации
         self.anim_block = []
-        self.clip = 0
+        # кадр анимации
+        self.__clip = 0
 
-    # Создание списка анимаций
+    # Создание списка анимаций ImgEditClass.cut_image
     def set_animation_list(self, *imglink):
         for img in imglink:
             self.anim_block.append(img)
@@ -113,13 +118,18 @@ class AnimatetdSprite(StaticSprite):
     def ret_animblock (self):
         return self.anim_block
 
-    # Анимация кадра
+    # Анимация кадра для анимации необходимо запихнуть эту функуцию в основной блок программы
     def animate(self):
-        if self.clip < len(self.anim_block):
-            self.image = self.anim_block[self.clip]
-            self.clip += 1
+        if self.__clip < len(self.anim_block):
+            self.image = self.anim_block[self.__clip]
+            self.__clip += 1
         else:
-            self.clip = 0
+            self.__clip = 0
+
+    # вернуть кадр - отладка и его номер
+    def ret_clip (self):
+        return self.__clip, self.anim_block[self.__clip]
+
 
 # Cетка для отладки и визуального представления
 class Net (object):
@@ -164,6 +174,7 @@ class Net (object):
             startXYpos[0] += empty_block_part[0]
         self.net.add(GraphicObject(startXYpos[0], startXYpos[1], self.line_width,
                                    empty_block_part[0] * (block_num[1]) + self.line_width))
+
         # Рисуем линии, чтобы сетка была сеткой
         startXYpos = getoldpost
         for i in range(1, block_num[1] + 1, 1):
