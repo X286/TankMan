@@ -1,5 +1,6 @@
 # coding=utf-8
 
+import pygame
 
 class Movement(object):
     def __init__(self, speedX, speedY =0):
@@ -10,15 +11,16 @@ class Movement(object):
 
     def move_left(self):
         self.rect.x -= self.speedX
-
+        return self.rect
     def move_right(self):
         self.rect.x += self.speedX
-
+        return self.rect
     def move_up(self):
         self.rect.y -= self.speedY
-
+        return self.rect
     def move_down(self):
         self.rect.y += self.speedY
+        return self.rect
 
     def set_speed(self, speedX, speedY=0):
         if speedY == 0:
@@ -62,79 +64,47 @@ class ShootEmUpScroll(Movement):
 # тут старт скроллинг - это когда начинать скроллинг
 # игровой спрайт - игроки
 # screen основное окно
+# конец скроллинга не прописан
 class ScrollingSimple(Movement):
-    def __init__(self, scrollingX, scrollingY, speedX, players, all):
-        super(ScrollingSimple, self).__init__(speedX, speedY=0)
-        if (not (type (scrollingX) is list)and (type (scrollingY)is list)):
-            raise SyntaxError (u'[X][Y], pos coords in list')
-        self.scrollingX = scrollingX
-        self.scrollingY = scrollingY
-        self.all = all
+    def __init__(self, scrollingX, scrollingY, speedX, players, all, speedY=0):
+        super(ScrollingSimple, self).__init__(speedX, speedY=speedY)
+        self.scrollingrectX = scrollingX
+        self.scrollingrectY = scrollingY
         self.players = players
+        self.all = all
 
     def move_left(self):
-        in_board = 0
         for player in self.players:
-            if self.scrollingX[0] < player.rect.x:
-                in_board +=1
-        if in_board == len(self.players):
-            for group in self.all:
-                for item in group:
-                    item.move_left()
-            return True
+            if player.rect.x - self.speedX < self.scrollingrectX[0]:
+                player.rect.x = self.scrollingrectX[0]
+                return True
         else:
             return False
 
     def move_right(self):
-
-        in_board = 0
         for player in self.players:
-            if self.scrollingX[1] > player.rect.x > 0:
-                in_board += 1
-        if in_board == len(self.players):
-            for group in self.all:
-                for item in group:
-                    item.move_right()
-            return True
+            if player.rect.x +self.speedX > self.scrollingrectX[1]:
+                player.rect.x = self.scrollingrectX[1]
+                return True
         else:
             return False
 
     def move_up(self):
-        in_board = 0
         for player in self.players:
-            if self.scrollingY[0] > player.rect.y > 0:
-                in_board += 1
-        if in_board == len(self.players):
-                for group in self.all:
-                    for item in group:
-                        item.move_down()
-                return True
-        else:
-                return False
-
-    def move_down(self):
-        in_board = 0
-        for player in self.players:
-            if self.scrollingY[1] < player.rect.y :
-                in_board += 1
-        if in_board == len(self.players):
-                for group in self.all:
-                    for item in group:
-                        item.move_up()
+            if player.rect.y - self.speedY < self.scrollingrectY[0]:
+                player.rect.y = self.scrollingrectY[0]
                 return True
         else:
             return False
 
+    def move_down(self):
+        for player in self.players:
+            if player.rect.y + self.speedY > self.scrollingrectY[1]:
+                player.rect.y = self.scrollingrectY[1]
+                return True
+        else:
+            return False
 
-    # может скроллить, если все игроки находятся в секторе скроллинга
-    #[Вверх вверх, вправо влево]
-    def scroll (self):
-        merge = []
-        merge.append(self.move_down())
-        merge.append(self.move_up())
-        merge.append(self.move_right())
-        merge.append(self.move_left())
-        return merge
 
 
 # Скроллинг - прямоугольник т.е. персонаж бегает в каком то прямоугольнике и

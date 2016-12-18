@@ -31,6 +31,12 @@ class GraphicObject(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.rect.x, self.rect.y = x, y
 
+    def get_size (self):
+        return self.image.get_size()
+
+    def get_current_pos (self):
+        return self.rect
+
     def draw(self, screen):
         screen.blit (self.image, (self.rect.x, self.rect.y))
 
@@ -99,11 +105,10 @@ class StaticSprite(GraphicObject):
         super(StaticSprite, self).__init__(x, y, width, height, color)
 
 
-
 # Анимированный спрайт
-class AnimatetdSprite(StaticSprite):
+class AnimatedSprite(StaticSprite):
     def __init__(self, x, y, width, height, color='#00ff00'):
-        super(AnimatetdSprite, self).__init__(x, y, width, height, color)
+        super(AnimatedSprite, self).__init__(x, y, width, height, color)
         # блок анимации
         self.anim_block = []
         # кадр анимации
