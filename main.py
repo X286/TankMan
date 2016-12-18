@@ -10,6 +10,7 @@ def main ():
     bg.LoadImage('res/bg/ccc.jpg')
     bgG = Graphics.BaseObj.UniteSprite (bg)
     bgGMove = Mech.Mech.ScrollingSimple([10, 750], [10, 550], 3, [BrickBlock], [bgG])
+    bgGMove.scrolluntil = pygame.Rect (0,0, 2683-800, 1059-600)
 
     pygame.init()
     MoveFigure_down = pygame.USEREVENT + 1
@@ -31,22 +32,29 @@ def main ():
             isStop = bgGMove.move_left()
             if isStop is False:
                 BrickBlock.move_left()
+            else:
+                bgGMove.scroll('left')
 
         if key[pygame.K_RIGHT]:
             isStop = bgGMove.move_right()
             if isStop is False:
                 BrickBlock.move_right()
+            else:
+                bgGMove.scroll('right')
 
         if key[pygame.K_UP]:
             isStop = bgGMove.move_up()
             if isStop is False:
                 BrickBlock.move_up()
+            else:
+                bgGMove.scroll('up')
 
         if key[pygame.K_DOWN]:
             isStop = bgGMove.move_down()
             if isStop is False:
                 BrickBlock.move_down()
-
+            else:
+                bgGMove.scroll('down')
         screen.fill(pygame.Color('#000000'))
 
         bgG.draw(screen)

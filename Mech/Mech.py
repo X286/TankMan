@@ -74,24 +74,28 @@ class ScrollingSimple(Movement):
         self.all = all
         self.scrolluntil = pygame.Rect
 
-    def scroll (self , where):
+    def scroll (self, where):
         if type(self.scrolluntil) is pygame.Rect:
-            if where  == 'left':
+            if where == 'left':
                 for sprtG in self.all:
                     for sprt in sprtG:
-                        sprt.rect.x += self.speedX
+                        if sprt.rect.x + self.speedX < self.scrolluntil.x:
+                            sprt.rect.x += self.speedX
             elif where == 'right':
                 for sprtG in self.all:
                     for sprt in sprtG:
-                        sprt.rect.x -= self.speedX
+                        if sprt.rect.x - self.speedX > (-1)*self.scrolluntil.width:
+                            sprt.rect.x -= self.speedX
             elif where == 'up':
                 for sprtG in self.all:
                     for sprt in sprtG:
-                        sprt.rect.y += self.speedX
+                        if sprt.rect.y + self.speedX < self.scrolluntil.y:
+                            sprt.rect.y += self.speedY
             elif where  == 'down':
                 for sprtG in self.all:
                     for sprt in sprtG:
-                        sprt.rect.y -= self.speedX
+                        if sprt.rect.y - self.speedX > (-1)*self.scrolluntil.height:
+                            sprt.rect.y -= self.speedY
         else:
             raise SyntaxError ('enter Rect')
 
