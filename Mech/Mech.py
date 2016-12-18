@@ -72,6 +72,28 @@ class ScrollingSimple(Movement):
         self.scrollingrectY = scrollingY
         self.players = players
         self.all = all
+        self.scrolluntil = pygame.Rect
+
+    def scroll (self , where):
+        if type(self.scrolluntil) is pygame.Rect:
+            if where  == 'left':
+                for sprtG in self.all:
+                    for sprt in sprtG:
+                        sprt.rect.x += self.speedX
+            elif where == 'right':
+                for sprtG in self.all:
+                    for sprt in sprtG:
+                        sprt.rect.x -= self.speedX
+            elif where == 'up':
+                for sprtG in self.all:
+                    for sprt in sprtG:
+                        sprt.rect.y += self.speedX
+            elif where  == 'down':
+                for sprtG in self.all:
+                    for sprt in sprtG:
+                        sprt.rect.y -= self.speedX
+        else:
+            raise SyntaxError ('enter Rect')
 
     def move_left(self):
         for player in self.players:
@@ -104,7 +126,6 @@ class ScrollingSimple(Movement):
                 return True
         else:
             return False
-
 
 
 # Скроллинг - прямоугольник т.е. персонаж бегает в каком то прямоугольнике и
