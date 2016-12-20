@@ -98,8 +98,6 @@ class UniteSprite(pygame.sprite.Group):
         self.add(sprites)
 
 
-
-
 # Статический спрайт
 class StaticSprite(GraphicObject):
     def __init__(self, x, y, width, height, color):
