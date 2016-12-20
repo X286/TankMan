@@ -1,3 +1,5 @@
+# coding=utf-8
+
 import construct.GameObject as GameObject
 import Graphics.BaseObj
 import pygame
