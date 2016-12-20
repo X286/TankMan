@@ -17,6 +17,8 @@ class GraphicObject(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.rect.x = x
         self.rect.y = y
+        self.X0 = x
+        self.Y0 = y
         self.image.fill(self.color)
 
     def LoadImage(self, path_to_img):

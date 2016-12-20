@@ -3,11 +3,13 @@
 import pygame
 
 class Movement(object):
-    def __init__(self, speedX, speedY =0):
-        if speedY == 0:
+    def __init__(self, speedX, speedY = -1):
+        if speedY == -1:
             speedY = speedX
+
         self.speedX = speedX
         self.speedY = speedY
+
 
     def move_left(self):
         self.rect.x -= self.speedX
@@ -60,78 +62,93 @@ class ShootEmUpScroll(Movement):
                 one.rect.y += self.speedY
 
 
-# Простой скроллинг, движение если блок приблизился к экрану
-# тут старт скроллинг - это когда начинать скроллинг
-# игровой спрайт - игроки
-# screen основное окно
-# конец скроллинга не прописан
+# Прокрутка.
+# 1 - pygame.Rect - прямоугольник в котором не происходит скроллинга
+# 2 - pygame.Rect - текущая сцена на вход можно подать sprite (а так же его наследников) или rect
+# 3 - игрок - его спрайт
+# 4 - группы спрайтов, которые необходимо двигать, например, группы заднего плана и/или группы переднего плана
+# 5 - размер основного экрана например :(800, 600)
+# return -  возвращает left right up down соотвественно, когда игрок ударятеся в край поля
 class ScrollingSimple(Movement):
-    def __init__(self, scrollingX, scrollingY, speedX, players, all, speedY=0):
-        super(ScrollingSimple, self).__init__(speedX, speedY=speedY)
-        self.scrollingrectX = scrollingX
-        self.scrollingrectY = scrollingY
-        self.players = players
-        self.all = all
-        self.scrolluntil = pygame.Rect
-
-    def scroll (self, where):
-        if type(self.scrolluntil) is pygame.Rect:
-            if where == 'left':
-                for sprtG in self.all:
-                    for sprt in sprtG:
-                        if sprt.rect.x + self.speedX < self.scrolluntil.x:
-                            sprt.rect.x += self.speedX
-            elif where == 'right':
-                for sprtG in self.all:
-                    for sprt in sprtG:
-                        if sprt.rect.x - self.speedX > (-1)*self.scrolluntil.width:
-                            sprt.rect.x -= self.speedX
-            elif where == 'up':
-                for sprtG in self.all:
-                    for sprt in sprtG:
-                        if sprt.rect.y + self.speedX < self.scrolluntil.y:
-                            sprt.rect.y += self.speedY
-            elif where  == 'down':
-                for sprtG in self.all:
-                    for sprt in sprtG:
-                        if sprt.rect.y - self.speedX > (-1)*self.scrolluntil.height:
-                            sprt.rect.y -= self.speedY
+    def __init__(self, scrolling_rect_obj, sence_sprite, player, sprite_groups, screensize):
+        self.player = player
+        super(ScrollingSimple, self).__init__(player.speedX, speedY=player.speedY)
+        self.scroll_rect = scrolling_rect_obj
+        self.player = player
+        if type (sprite_groups) is list:
+            self.sprite_groups = sprite_groups
         else:
-            raise SyntaxError ('enter Rect')
+            raise TypeError('List of Groups only!')
 
-    def move_left(self):
-        for player in self.players:
-            if player.rect.x - self.speedX < self.scrollingrectX[0]:
-                player.rect.x = self.scrollingrectX[0]
-                return True
+        if type(sence_sprite) is pygame.Rect:
+            self.maincence = sence_sprite
         else:
-            return False
+            try:
+                self.maincence = sence_sprite.rect
+            except:
+                raise TypeError ('pyGame Rect or pyGame Sprite Only!')
+        self.screensize = screensize
 
-    def move_right(self):
-        for player in self.players:
-            if player.rect.x +self.speedX > self.scrollingrectX[1]:
-                player.rect.x = self.scrollingrectX[1]
-                return True
+    def scroll_left(self):
+        if self.player.rect.x > self.scroll_rect.x:
+            self.player.move_left()
         else:
-            return False
+            if self.maincence.x + self.scroll_rect.x < self.scroll_rect.x - self.player.speedX:
+                for group in self.sprite_groups:
+                    for item in group:
+                        item.rect.x += self.player.speedX
+            else:
+                if self.player.rect.x > 0:
+                    self.player.move_left()
+                else:
+                    self.player.rect.x = 0
+                    return 'left'
 
-    def move_up(self):
-        for player in self.players:
-            if player.rect.y - self.speedY < self.scrollingrectY[0]:
-                player.rect.y = self.scrollingrectY[0]
-                return True
+    def scroll_right(self):
+        if self.player.rect.x + self.player.rect.width < self.scroll_rect.x + self.scroll_rect.width:
+            self.player.move_right()
         else:
-            return False
+            if self.maincence.x + self.maincence.width - \
+                    (self.screensize[0] - self.scroll_rect.x - self.scroll_rect.width + self.player.speedX) > \
+                            self.scroll_rect.x + self.scroll_rect.width:
+                for group in self.sprite_groups:
+                    for item in group:
+                        item.rect.x -= self.player.speedX
+            else:
+                if self.player.rect.x + self.player.rect.width + self.player.speedX < self.screensize[0]:
+                    self.player.move_right()
+                else:
+                    self.player.rect.x = self.screensize[0] - self.player.rect.width
+                    return 'right'
 
-    def move_down(self):
-        for player in self.players:
-            if player.rect.y + self.speedY > self.scrollingrectY[1]:
-                player.rect.y = self.scrollingrectY[1]
-                return True
+    def scroll_up(self):
+        if self.player.rect.y > self.scroll_rect.y:
+            self.player.move_up()
         else:
-            return False
+            if self.maincence.y + self.scroll_rect.y < self.scroll_rect.y:
+                for group in self.sprite_groups:
+                    for item in group:
+                        item.rect.y += self.player.speedY
+            else:
+                if self.player.rect.y > 0:
+                    self.player.move_up()
+                else:
+                    self.player.rect.y = 0
+                    return 'up'
 
+    def scroll_down(self):
+        if self.player.rect.y + self.player.rect.height < self.scroll_rect.y + self.scroll_rect.height:
+            self.player.move_down()
+        else:
+            if self.maincence.y + self.maincence.height - (self.screensize[1] - self.scroll_rect.y - self.scroll_rect.height + self.player.speedY) > \
+                            self.scroll_rect.y + self.scroll_rect.height:
+                for group in self.sprite_groups:
+                    for item in group:
+                        item.rect.y -= self.player.speedY
+            else:
+                if self.player.rect.y + self.player.rect.height + self.player.speedY < self.screensize[1]:
+                    self.player.move_down()
+                else:
+                    self.player.rect.y = self.screensize[1] - self.player.rect.height
+                    return 'down'
 
-# Скроллинг - прямоугольник т.е. персонаж бегает в каком то прямоугольнике и
-# пересекая его, начинается скроллинг основной сцены
-class ScrollRect(Movement): pass
