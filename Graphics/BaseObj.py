@@ -17,8 +17,6 @@ class GraphicObject(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.rect.x = x
         self.rect.y = y
-        self.X0 = x
-        self.Y0 = y
         self.image.fill(self.color)
 
     def LoadImage(self, path_to_img):
@@ -101,6 +99,7 @@ class UniteSprite(pygame.sprite.Group):
 
 
 
+
 # Статический спрайт
 class StaticSprite(GraphicObject):
     def __init__(self, x, y, width, height, color):
@@ -115,12 +114,22 @@ class AnimatedSprite(StaticSprite):
         self.anim_block = []
         # кадр анимации
         self.__clip = 0
+        self.anim_dict = dict()
 
     # Создание списка анимаций ImgEditClass.cut_image
     def set_animation_list(self, *imglink):
         for img in imglink:
             self.anim_block.append(img)
         self.image = self.anim_block[0]
+
+    def set_animation_dict (self, dict):
+        self.anim_dict = dict
+
+    def set_animation_dict_to_list (self, key):
+        self.anim_block = self.anim_dict[key]
+
+    def set_anim_element (self, imginlistcount):
+        self.image = self.anim_block [imginlistcount]
 
     def ret_animblock (self):
         return self.anim_block
