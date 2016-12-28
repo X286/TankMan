@@ -41,6 +41,8 @@ class GraphicObject(pygame.sprite.Sprite):
         screen.blit (self.image, (self.rect.x, self.rect.y))
         
 
+
+
 # Класс этот будет храниться в памяти пока не закроется программа.
 # Я это сделал потому, что тайлы и спрайты нужны протяжении всей игры.
 class ImgEditClass(object):

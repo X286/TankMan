@@ -91,6 +91,7 @@ class ScrollingSimple(Movement):
 
     def scroll_left(self):
         if self.player.rect.x > self.scroll_rect.x:
+
             self.player.move_left()
         else:
             if self.maincence.x + self.scroll_rect.x < self.scroll_rect.x - self.player.speedX:

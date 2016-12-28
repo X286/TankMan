@@ -33,6 +33,7 @@ class Player(Graphics.AnimatedSprite, Mech.Movement):
         Graphics.AnimatedSprite.__init__(self, Gx, Gy, GW, GH, color=color)
         Mech.Movement.__init__(self, MSpeedX, MSpeedY)
         self.direction = [False, False, False, False]
+        self.hit_power = 50
 
     def set_direction(self, *direction):
         if len (direction) != 4:
@@ -51,6 +52,7 @@ class Bullet(Graphics.AnimatedSprite, Mech.Movement):
         self.__range_count = 0
         self.isExsist = True
         self.bulletDirection = []
+
 
     def set_direction(self):
             self.bulletDirection = self.player.direction

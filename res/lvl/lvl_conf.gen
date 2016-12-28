@@ -1,29 +1,14 @@
 !prepare!
-staticbg_X = 0;
-staticbg_Y = 0;
-game_field_X = 0; # rect pos X
-game_field_Y = 0; # rect pos Y
-netX = 200;
-netY = 100;
-sprite_folder  = '../sprite';
-effects_folder = '../sound';
-is_sprite_in_atlas = 0;
-hitsPlayer = 100;
-hitsEnemy1 = 50;
-hitsEnemy2 = 50;
-hitsEnemy3 = 50;
-bonus_time = 10;# sec
-static_bonus_time = 30;#sec
+bg_color = (255,255,255); # comment 1
+tile_size = (50, 50);
+lvl_in_tiles = (20, 20);
+sprites_src0 = 'sprites\trall.png';
+sprites_src1 = 'sprites\trazz.png'; # comment 2
+!tiles!
+tiles_src0 = '../res/tiles/terrain.jpg';
+tiles_src1 = '../res/tiles/t.jpg';
+a=(tiles_src0);
+b = (55,0, tiles_src1);
+c = (166, 166, tiles_src0);
 !sprites!
-player = {s_move_up:'',s_move_down:''};
-Enemy1 = {respawn = (0,0){3}}; #respawn in cells
-Enemy2 = {};
-tree = {};
-bounus = {};
-!mapa!
-genmapa = {tree(0,0){3}};
-!sound!
-change = 100;
-!changes!
-do = 100;
-
+d = 'sorted'; # in this case

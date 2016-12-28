@@ -1,1 +1,1 @@
-import readconfig
+from readconfig import parcer
