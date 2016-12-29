@@ -6,6 +6,8 @@ class lvl_prepare(object):
     def __init__(self, lvl_conf_f):
         lvl_conf = open(lvl_conf_f, 'r')
         self.__prepared_parce = {}
+        self.tiles = {}
+        self.sprites = {}
         line_count = 0
         key = ''
         for line in lvl_conf:
@@ -31,11 +33,11 @@ class lvl_prepare(object):
                 if match == []:
                     raise SyntaxError ('Error at ' + element)
 
-    def load_tiles(self, tiles_key):
-        tiles = self.__get_Key(tiles_key)
-        varible_name = []
+    def tiles_sprites_parce(self, tiles_key, setTileOrTile):
+        tiles_key = self.__get_Key(tiles_key)
+        tiles_varibles = dict()
         #Первое: находим пути к файлам тайлов - выносим их в список трассим их по месту пребывания
-        for path in tiles:
+        for path in tiles_key:
             tilePath = re.match("([a-z_0-9]+)=('[a-z_ 0-9A-Z\\\./]+')", path)
 
             if tilePath != None:
@@ -43,18 +45,49 @@ class lvl_prepare(object):
                     open(tilePath.group(2).replace('\'', ''), 'r').close()
                 except:
                     raise SyntaxError('Coud not open file: ' + tilePath.group(2))
-                print tilePath.group(1), tilePath.group(2).replace('\'','')
+                tiles_varibles[tilePath.group(1)] = [tilePath.group(2).replace('\'','')]
             else:
                 tile_varible = re.match("([a-zA-Z0-9]+)=\(([a-z_A-Z0-9]+)\)", path)
                 selected_math = re.match("([a-zA-Z0-9]+)=\((\d+,\d+,[a-z_A-Z0-9]+)\)", path)
                 if tile_varible != None:
-                    print tile_varible.group(2)
+                    if tiles_varibles.has_key(tile_varible.group(2)):
+                        tiles_varibles[tile_varible.group(2)].append(tile_varible.group(1))
                 elif selected_math != None:
-                    print selected_math.group(2).split(',')
+                    splitted = selected_math.group(2).split(',')
+                    if tiles_varibles.has_key(splitted[2]):
+                        if re.match("([a-zA-Z][a-zA-Z0-9]*)", selected_math.group(1)) != None:
+                            tiles_varibles[splitted[2]].append((selected_math.group(1), int(splitted[0]), int(splitted[1])))
+                        else:
+                            raise SyntaxError ("Value cannot be the digit! " + selected_math.group(1))
                 else:
-                    raise SyntaxError ('Bad things in line: '+ path)
+                    raise SyntaxError ('Bad things in line: ' + path)
+        if type (setTileOrTile) is bool:
+            if setTileOrTile == True:
+                self.tiles = tiles_varibles
+            else:
+                self.sprites = tiles_varibles
+            return tiles_varibles
+        else:
+            raise SyntaxError ('Bool Needed')
 
-        print varible_name
+
+    def check_tiles (self, tiles_key, sprites_key):
+        tiles = self.tiles_sprites_parce(tiles_key, True)
+        sprt = self.tiles_sprites_parce(sprites_key, False)
+        for tkey in tiles.keys():
+            if sprt.has_key(tkey):
+                raise SyntaxError('Syntax Error! match '+tkey)
+            for tile in range (1, len (tiles[tkey]), 1):
+                if type (tiles[tkey][tile]) is str:
+                    for sprtkey in sprt.keys():
+                        if type (sprt[sprtkey][1]) is str:
+                            if tiles[tkey][tile] == sprt[sprtkey][1]:
+                                raise SyntaxError ('Varibles is same ' + tiles[tkey][tile])
+                elif type (tiles[tkey][tile]) is tuple:
+                    for sk in sprt.keys():
+                        if sprt[sk][1][0] == tiles[tkey][tile][0]:
+                            raise SyntaxError('Varibles is same ' + tiles[tkey][tile][0])
+
 
     def getDict(self):
         return self.__prepared_parce
@@ -63,7 +96,10 @@ class lvl_prepare(object):
         return self.__prepared_parce[key]
 
 
-lvl_prepare ('../res/lvl/lvl_conf.gen').load_tiles('tiles')
+parce = lvl_prepare ('../res/lvl/lvl_conf.gen')
+print parce.tiles_sprites_parce('tiles', True)
+print parce.tiles_sprites_parce('sprites', False)
+parce.check_tiles('tiles', 'sprites')
 
 
 '''

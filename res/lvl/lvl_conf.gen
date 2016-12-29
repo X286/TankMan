@@ -2,13 +2,17 @@
 bg_color = (255,255,255); # comment 1
 tile_size = (50, 50);
 lvl_in_tiles = (20, 20);
-sprites_src0 = 'sprites\trall.png';
-sprites_src1 = 'sprites\trazz.png'; # comment 2
+
 !tiles!
 tiles_src0 = '../res/tiles/terrain.jpg';
 tiles_src1 = '../res/tiles/t.jpg';
-a=(tiles_src0);
-b = (55,0, tiles_src1);
-c = (166, 166, tiles_src0);
+a1=(tiles_src0);
+b1 = (55,0, tiles_src1);
+c1 = (166, 166, tiles_src0);
+
 !sprites!
-d = 'sorted'; # in this case
+sprites_src0 = '../res/sprite/down.png';
+sprites_src1 = '../res/sprite/left.png'; # comment 2
+a = (sprites_src0);
+b = (55,0, sprites_src1);
+c = (166, 166, sprites_src0);
