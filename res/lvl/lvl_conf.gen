@@ -11,8 +11,11 @@ b1 = (55,0, tiles_src1);
 c1 = (166, 166, tiles_src0);
 
 !sprites!
-sprites_src0 = '../res/sprite/down.png';
-sprites_src1 = '../res/sprite/left.png'; # comment 2
+sprites_src0 = '../res/sprite/t.jpg';
+sprites_src1 = '../res/sprite/terrain.jpg';
 a = (sprites_src0);
-b = (55,0, sprites_src1);
-c = (166, 166, sprites_src0);
+b = (55,0, 10, 10, sprites_src1);
+c = (166, 166, 10, 10, sprites_src0);
+
+!animate_sprt!
+anima = (a:30,b:30,c:15); # где 30 15 милисекунды

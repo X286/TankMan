@@ -1,6 +1,8 @@
 # coding=utf-8
 
 import re
+import Graphics.BaseObj
+import ast
 
 class lvl_prepare(object):
     def __init__(self, lvl_conf_f):
@@ -8,6 +10,7 @@ class lvl_prepare(object):
         self.__prepared_parce = {}
         self.tiles = {}
         self.sprites = {}
+        self.options = {}
         line_count = 0
         key = ''
         for line in lvl_conf:
@@ -33,10 +36,20 @@ class lvl_prepare(object):
                 if match == []:
                     raise SyntaxError ('Error at ' + element)
 
-    def tiles_sprites_parce(self, tiles_key, setTileOrTile):
+    def prepare_oprions (self, key):
+        if self.__prepared_parce.has_key(key):
+            for option in self.__prepared_parce[key]:
+                # split_options
+                match = re.match('([a-zA-Z][A-Za-z0-9_]*)=(\([0-9,]+\))', option)
+                if match == None:
+                    raise SyntaxError ('Option: ' + option + 'Failed')
+                self.options[match.group(1)] = ast.literal_eval(match.group(2))
+        else:
+            raise SyntaxError ('Coud not find options!')
+
+    def tiles_parce(self, tiles_key):
         tiles_key = self.__get_Key(tiles_key)
         tiles_varibles = dict()
-        #Первое: находим пути к файлам тайлов - выносим их в список трассим их по месту пребывания
         for path in tiles_key:
             tilePath = re.match("([a-z_0-9]+)=('[a-z_ 0-9A-Z\\\./]+')", path)
 
@@ -61,19 +74,41 @@ class lvl_prepare(object):
                             raise SyntaxError ("Value cannot be the digit! " + selected_math.group(1))
                 else:
                     raise SyntaxError ('Bad things in line: ' + path)
-        if type (setTileOrTile) is bool:
-            if setTileOrTile == True:
-                self.tiles = tiles_varibles
-            else:
-                self.sprites = tiles_varibles
-            return tiles_varibles
-        else:
-            raise SyntaxError ('Bool Needed')
 
+        self.tiles = tiles_varibles
+        return self.tiles
 
-    def check_tiles (self, tiles_key, sprites_key):
-        tiles = self.tiles_sprites_parce(tiles_key, True)
-        sprt = self.tiles_sprites_parce(sprites_key, False)
+    def sprites_parce(self, sprite_key):
+        sprites_list = self.__prepared_parce[sprite_key]
+        for sprites_item in sprites_list:
+            # Проверяем пути к спрайтовым атласам
+            if re.match('([a-zA-Z][A-Za-z_0-9]*)[= ]+\'([\\/a-zA-Z0-9\.]+)\'', sprites_item)!=None:
+                sprite_atlas_mach = re.match('([a-zA-Z][A-Za-z_0-9]*)[= ]+\'([\\/a-zA-Z0-9\.]+)\'', sprites_item)
+                try:
+                    file(sprite_atlas_mach.group(2), 'r')
+                except:
+                    raise SyntaxError ('Coud not open file at:' + sprite_atlas_mach.group(2))
+                self.sprites[sprite_atlas_mach.group(1)] = [sprite_atlas_mach.group(2)]
+                #print self.sprites
+            elif re.match('([a-zA-Z][A-Za-z_0-9]*)[ =]+\(([ _a-zA-Z0-9]+)\)', sprites_item):
+                match = re.match('([a-zA-Z][A-Za-z_0-9]*)[ =]+\(([ _a-zA-Z0-9]+)\)', sprites_item)
+                if self.sprites.has_key(match.group(2)):
+                    self.sprites[match.group(2)].append(match.group(1))
+
+            elif re.match('[a-zA-Z][A-Za-z_0-9]*[ =]+\([0-9, ]+([a-z_A-Z0-9]+)\)', sprites_item) != None:
+                match = re.match('([a-zA-Z][A-Za-z_0-9]*)[ =]+\(([0-9, ]+)([a-z_A-Z0-9]+)\)', sprites_item)
+                if self.sprites.has_key(match.group(3)):
+                    #print match.group(1), match.group(2)[:-1]
+                    accum = [match.group(1)]
+                    for integer in match.group(2)[:-1].split (','):
+                        accum.append(int(integer))
+                    self.sprites[match.group(3)].append(tuple(accum))
+        return self.sprites
+
+    def check_names (self, tiles_key, sprites_key):
+        tiles = self.tiles_parce(tiles_key)
+        sprt = self.sprites_parce(sprites_key)
+
         for tkey in tiles.keys():
             if sprt.has_key(tkey):
                 raise SyntaxError('Syntax Error! match '+tkey)
@@ -88,6 +123,46 @@ class lvl_prepare(object):
                         if sprt[sk][1][0] == tiles[tkey][tile][0]:
                             raise SyntaxError('Varibles is same ' + tiles[tkey][tile][0])
 
+    def create_graphics_tiles(self, key, tile_size):
+        tiles_lst = self.tiles_parce(key)
+        for tileinatlas in tiles_lst.keys():
+            tile_atlas = Graphics.BaseObj.ImgEditClass(tiles_lst[tileinatlas][0])
+            tiles_lst[tileinatlas][0] = tile_atlas.convert_to_surface()
+            for k in range(1, len (tiles_lst[tileinatlas]), 1):
+                if type(tiles_lst[tileinatlas][k]) is str:
+                    tiles_lst[tileinatlas][k] = {tiles_lst[tileinatlas][k]:tiles_lst[tileinatlas][0]}
+                elif type(tiles_lst[tileinatlas][k] is tuple):
+                    if len(tiles_lst[tileinatlas][k]) == 3:
+                        tiles_lst[tileinatlas][k] = {
+                            tiles_lst[tileinatlas][k][0]:
+                                tile_atlas.cut_image(tiles_lst[tileinatlas][k][1], tiles_lst[tileinatlas][k][2], tile_size[0], tile_size[1])
+                        }
+                    else:
+                        raise SyntaxError('value must have 2 coors x and y')
+        return self.tiles
+
+    def create_graphics_sprites (self, key):
+        sprites_lst = self.sprites_parce(key)
+        for keys in sprites_lst.keys():
+            sprites_lst[keys][0] =Graphics.BaseObj.ImgEditClass(sprites_lst[keys][0])
+            for count in range(1, len(sprites_lst[keys]),1):
+                if type (sprites_lst[keys][count]) is str:
+                    sprites_lst[keys][count] = {sprites_lst[keys][count]: sprites_lst[keys][0].convert_to_surface()}
+                elif type (sprites_lst[keys][count]) is tuple:
+                    try:
+                        sprites_lst[keys][count] = {
+                            sprites_lst[keys][count][0]: sprites_lst[keys][0].cut_image(sprites_lst[keys][count][1],
+                                                                                        sprites_lst[keys][count][2],
+                                                                                        sprites_lst[keys][count][3],
+                                                                                        sprites_lst[keys][count][4])}
+                    except:
+                        raise SyntaxError ('Bad Description in segment : '+str (sprites_lst[keys][count]))
+            sprites_lst[keys][0] = sprites_lst[keys][0].convert_to_surface()
+
+        return self.sprites
+
+    def create_animation(self):
+        pass
 
     def getDict(self):
         return self.__prepared_parce
@@ -96,10 +171,15 @@ class lvl_prepare(object):
         return self.__prepared_parce[key]
 
 
-parce = lvl_prepare ('../res/lvl/lvl_conf.gen')
-print parce.tiles_sprites_parce('tiles', True)
-print parce.tiles_sprites_parce('sprites', False)
-parce.check_tiles('tiles', 'sprites')
+
+parce = lvl_prepare('../res/lvl/lvl_conf.gen')
+parce.sprites_parce('sprites') # парсинг спрайтов
+parce.tiles_parce('tiles') # парсинг тайлов
+parce.check_names ('tiles', 'sprites') # проверка имен (чтобы имена не совпадали)
+parce.prepare_oprions('prepare') # Заголовок для подготовки уровня
+
+print parce.create_graphics_tiles('tiles', tile_size=parce.options['tile_size']) # сборка тайлов
+parce.create_graphics_sprites ('sprites')
 
 
 '''
