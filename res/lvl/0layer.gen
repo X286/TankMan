@@ -1,5 +1,0 @@
-tiles_src0='tiles\\terrain.jpg'
-tiles_src1='tiles\\t.jpg'
-a=(tiles_src0)
-1=(55,0,tiles_src1)
-c=(166,166,tiles_src0)

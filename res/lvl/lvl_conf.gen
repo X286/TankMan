@@ -1,7 +1,9 @@
 !prepare!
+lvl_scene = (50, 2);
 bg_color = (255,255,255); # comment 1
 tile_size = (50, 50);
 lvl_in_tiles = (20, 20);
+
 
 !tiles!
 tiles_src0 = '../res/tiles/terrain.jpg';
@@ -17,5 +19,5 @@ a = (sprites_src0);
 b = (55,0, 10, 10, sprites_src1);
 c = (166, 166, 10, 10, sprites_src0);
 
-!animate_sprt!
-anima = (a:30,b:30,c:15); # где 30 15 милисекунды
+!animation!
+PlayerLeft = (a:30,b:30,c:15); # где 30 15 милисекунды

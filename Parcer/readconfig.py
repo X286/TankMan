@@ -1,10 +1,11 @@
 # coding=utf-8
-
 import re
 import Graphics.BaseObj
 import ast
 
-class lvl_prepare(object):
+
+class ParseLvlConf(object):
+
     def __init__(self, lvl_conf_f):
         lvl_conf = open(lvl_conf_f, 'r')
         self.__prepared_parce = {}
@@ -125,40 +126,40 @@ class lvl_prepare(object):
 
     def create_graphics_tiles(self, key, tile_size):
         tiles_lst = self.tiles_parce(key)
+        tiles_variable_dict = {}
+
         for tileinatlas in tiles_lst.keys():
             tile_atlas = Graphics.BaseObj.ImgEditClass(tiles_lst[tileinatlas][0])
-            tiles_lst[tileinatlas][0] = tile_atlas.convert_to_surface()
             for k in range(1, len (tiles_lst[tileinatlas]), 1):
                 if type(tiles_lst[tileinatlas][k]) is str:
-                    tiles_lst[tileinatlas][k] = {tiles_lst[tileinatlas][k]:tiles_lst[tileinatlas][0]}
+                    tiles_variable_dict [tiles_lst[tileinatlas][k]] = tile_atlas.convert_to_surface()
                 elif type(tiles_lst[tileinatlas][k] is tuple):
                     if len(tiles_lst[tileinatlas][k]) == 3:
-                        tiles_lst[tileinatlas][k] = {
-                            tiles_lst[tileinatlas][k][0]:
-                                tile_atlas.cut_image(tiles_lst[tileinatlas][k][1], tiles_lst[tileinatlas][k][2], tile_size[0], tile_size[1])
-                        }
+                        tiles_variable_dict [tiles_lst[tileinatlas][k][0]] = tile_atlas.cut_image(tiles_lst[tileinatlas][k][1], tiles_lst[tileinatlas][k][2], tile_size[0], tile_size[1])
                     else:
                         raise SyntaxError('value must have 2 coors x and y')
+        self.tiles = tiles_variable_dict
         return self.tiles
 
     def create_graphics_sprites (self, key):
         sprites_lst = self.sprites_parce(key)
+        sprite_variable_keys = {}
         for keys in sprites_lst.keys():
-            sprites_lst[keys][0] =Graphics.BaseObj.ImgEditClass(sprites_lst[keys][0])
+            spritePic = Graphics.BaseObj.ImgEditClass(sprites_lst[keys][0])
             for count in range(1, len(sprites_lst[keys]),1):
                 if type (sprites_lst[keys][count]) is str:
-                    sprites_lst[keys][count] = {sprites_lst[keys][count]: sprites_lst[keys][0].convert_to_surface()}
+                    sprite_variable_keys[sprites_lst[keys][count]] = spritePic.convert_to_surface()
+
                 elif type (sprites_lst[keys][count]) is tuple:
                     try:
-                        sprites_lst[keys][count] = {
-                            sprites_lst[keys][count][0]: sprites_lst[keys][0].cut_image(sprites_lst[keys][count][1],
+                        sprite_variable_keys [sprites_lst[keys][count][0]] = spritePic.cut_image(sprites_lst[keys][count][1],
                                                                                         sprites_lst[keys][count][2],
                                                                                         sprites_lst[keys][count][3],
-                                                                                        sprites_lst[keys][count][4])}
+                                                                                        sprites_lst[keys][count][4])
                     except:
                         raise SyntaxError ('Bad Description in segment : '+str (sprites_lst[keys][count]))
-            sprites_lst[keys][0] = sprites_lst[keys][0].convert_to_surface()
 
+        self.sprites = sprite_variable_keys
         return self.sprites
 
     def create_animation(self):
@@ -170,67 +171,49 @@ class lvl_prepare(object):
     def __get_Key(self, key):
         return self.__prepared_parce[key]
 
+    def getOptions(self):
+        return self.options
 
 
-parce = lvl_prepare('../res/lvl/lvl_conf.gen')
-parce.sprites_parce('sprites') # парсинг спрайтов
-parce.tiles_parce('tiles') # парсинг тайлов
-parce.check_names ('tiles', 'sprites') # проверка имен (чтобы имена не совпадали)
-parce.prepare_oprions('prepare') # Заголовок для подготовки уровня
+# Собираем уровень из тайлов
+class CreateTileMap(object):
+    def __init__(self, path):
+        self.parcedMapa = {}
+        try:
+            self.mapfile = open(path, 'r')
+        except:
+            raise IOError ('coud not open file: '+ path)
+        self.__syntax_check()
 
-print parce.create_graphics_tiles('tiles', tile_size=parce.options['tile_size']) # сборка тайлов
-parce.create_graphics_sprites ('sprites')
 
 
-'''
-    def __init__(self, f_path):
-        self.parced = file(f_path, 'r')
-
-    # первое чтение, разбиение его в словарь для обработки
-    def preread_first (self):
-        self.parced.seek(0)
-        output_dict, key = {}, ''
-        for line in self.parced:
-            line = line.replace('\n', '')
+    def __syntax_check(self):
+        start = False
+        end = False
+        for i, line in enumerate (self.mapfile):
             line = line.replace('\t', '')
-            line = line.replace(' ', '')
-            line = line.replace('"', '')
-            line = line.replace('\'', '')
-            all = re.findall('(^[^#\[\n]+)', line)
-            if all != []:
-                for line in all:
-                    if (line[-1:] == '!' and line [0]=='!'):
-                        replacedLine = line.replace('!', '')
-                        output_dict[replacedLine] = ''
-                        key = replacedLine
-                    elif line[-1:] == ';':
-                        output_dict[key] += line
-                    else:
-                        raise SyntaxError ('Operator ! or ; missed!')
+            line = line.replace('\n', '')
+            if line == '[':
+                print 'Start'
+                start = True
+            elif line == ']':
+                print 'end'
+                end = True
+            else:
+                matched = re.match('[a-zA-Z\{0-9\}, ]+;', line)
+                if  matched != None:
+                    getMappa = matched.group(0)
+                    print getMappa
+                else:
+                    raise SyntaxError ('Missed statement in block lower block ' + getMappa)
+        if (start is False) or (end is False):
+            raise SyntaxError ('missed start block or end block')
 
-        return output_dict
+mapa = CreateTileMap ('../res/lvl/lvl1.gen')
 
-    # разбиение на элементы и частичное приведение к типам
-    def extended_split_dict(self):
-        dict = self.preread_first()
-        for key in dict.keys():
-            subdict = {}
-            for line in dict[key][:-1].split (';'):
-                subdict_re= re.match('([a-zA-Z_0-9]+)=([\\(\){\}\ =_:0-9a-zA-Z/\.\,]+)', line)
-                if subdict_re != None:
-                    if re.match('[0-9]+', subdict_re.group(2)):
-                        subdict[subdict_re.group(1)] = int(subdict_re.group(2))
-                    elif re.match('[0-9]+[\.][0-9]+', subdict_re.group(2)):
-                        subdict[subdict_re.group(1)] = float(subdict_re.group(2))
-                    else:
-                        subdict[subdict_re.group(1)] = subdict_re.group(2)
-            dict[key] = {}
-            dict[key] = subdict
-        return dict
-
-    # расширенное разбиение на элементы.
-    def expandread (self):
-        dict_ex = self.extended_split_dict()
-        return dict_ex
-
-'''
+#parce = ParseLvlConf('../res/lvl/lvl_conf.gen')
+#parce.sprites_parce('sprites') # парсинг спрайтов
+#parce.check_names ('tiles', 'sprites') # проверка имен (чтобы имена не совпадали)
+#parce.prepare_oprions('prepare') # Заголовок для подготовки уровня
+#print parce.create_graphics_tiles('tiles', tile_size=parce.options['tile_size']) # сборка тайлов
+#print parce.create_graphics_sprites ('sprites')
