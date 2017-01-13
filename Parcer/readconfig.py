@@ -178,7 +178,7 @@ class ParseLvlConf(object):
 # Собираем уровень из тайлов
 class CreateTileMap(object):
     def __init__(self, path):
-        self.parcedMapa = {}
+        self.parcedMapa = []
         try:
             self.mapfile = open(path, 'r')
         except:
@@ -187,31 +187,37 @@ class CreateTileMap(object):
 
 
 
+
     def __syntax_check(self):
         start = False
         end = False
-        for i, line in enumerate (self.mapfile):
+        for line in self.mapfile:
             line = line.replace('\t', '')
             line = line.replace('\n', '')
             if line == '[':
-                print 'Start'
                 start = True
             elif line == ']':
-                print 'end'
                 end = True
             else:
                 matched = re.match('[a-zA-Z\{0-9\}, ]+;', line)
                 if  matched != None:
-                    getMappa = matched.group(0)
-                    print getMappa
+                    getMapString = matched.group(0).replace(';', '')
+                    self.parcedMapa.append(getMapString)
                 else:
-                    raise SyntaxError ('Missed statement in block lower block ' + getMappa)
+                    raise SyntaxError ('Missed statement in block lower block ' + getMapString)
         if (start is False) or (end is False):
             raise SyntaxError ('missed start block or end block')
 
-mapa = CreateTileMap ('../res/lvl/lvl1.gen')
+    def buildMapa (self, optionsFields):
+        print self.parcedMapa,'\n', optionsFields
 
-#parce = ParseLvlConf('../res/lvl/lvl_conf.gen')
+
+parce = ParseLvlConf('../res/lvl/lvl_conf.gen')
+parce.sprites_parce('tiles')
+parce.prepare_oprions('prepare')
+mapa = CreateTileMap ('../res/lvl/lvl1.gen')
+mapa.buildMapa(parce.options)
+
 #parce.sprites_parce('sprites') # парсинг спрайтов
 #parce.check_names ('tiles', 'sprites') # проверка имен (чтобы имена не совпадали)
 #parce.prepare_oprions('prepare') # Заголовок для подготовки уровня
