@@ -1,6 +1,7 @@
 # coding=utf-8
 
 import construct.GameObject as GameObject
+import construct.LvlBuild as LvlBuild
 import Graphics.BaseObj
 import pygame
 import Mech
@@ -15,11 +16,16 @@ def main ():
     block = GameObject.Block(0, 200, 200, 50, 50)
     block.health = 100
     blockG = Graphics.BaseObj.UniteSprite(block)
+    tile_lvl = LvlBuild.JustDoMyTileDict('res/lvl/lvl1.gen', 'res/lvl/lvl_conf.gen').Build_lvl('tiles', 'prepare',
+                                                                                               'tile_size')
+
     bgG = Graphics.BaseObj.UniteSprite (bg)
-    bgGMove = Mech.Mech.ScrollingSimple(pygame.Rect(50,50, 640, 480), bg, Tank, [bgG, blockG], screensize=screen.get_size())
+    bgGMove = Mech.Mech.ScrollingSimple(pygame.Rect(50,50, 640, 480), bg, Tank, [bgG, blockG, tile_lvl], screensize=screen.get_size())
     pygame.init()
     FPS = pygame.time.Clock()
     isWorking=True
+
+
     while (isWorking):
         FPS.tick(60)
 
@@ -48,10 +54,12 @@ def main ():
             Tank.set_direction(False, False, False, True)
             bgGMove.scroll_down()
 
-        screen.fill(pygame.Color('#000000'))
+        screen.fill(pygame.Color('#FFFFFF'))
         bgG.draw(screen)
+        tile_lvl.draw(screen)
         playerG.draw(screen)
         blockG.draw(screen)
+
 
         pygame.display.flip()
 

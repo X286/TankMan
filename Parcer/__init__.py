@@ -1,1 +1,2 @@
-from readconfig import parcer
+import readconfig
+import CreateTileMap

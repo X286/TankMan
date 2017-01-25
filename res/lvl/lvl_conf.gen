@@ -1,20 +1,20 @@
 !prepare!
 lvl_scene = (50, 2);
 bg_color = (255,255,255); # comment 1
-tile_size = (50, 50);
+tile_size = (47, 47);
 lvl_in_tiles = (20, 20);
 
 
 !tiles!
-tiles_src0 = '../res/tiles/terrain.jpg';
-tiles_src1 = '../res/tiles/t.jpg';
+tiles_src0 = 'res/tiles/terrain.jpg';
+tiles_src1 = 'res/tiles/t.jpg';
 a1=(tiles_src0);
 b1 = (55,0, tiles_src1);
 c1 = (166, 166, tiles_src0);
 
 !sprites!
-sprites_src0 = '../res/sprite/t.jpg';
-sprites_src1 = '../res/sprite/terrain.jpg';
+sprites_src0 = 'res/sprite/t.jpg';
+sprites_src1 = 'res/sprite/terrain.jpg';
 a = (sprites_src0);
 b = (55,0, 10, 10, sprites_src1);
 c = (166, 166, 10, 10, sprites_src0);
