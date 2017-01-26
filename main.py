@@ -7,7 +7,9 @@ import pygame
 import Mech
 
 def main ():
+
     screen = pygame.display.set_mode((800, 600))
+    pygame.display.set_caption('TankMan')
     Tank = GameObject.Player(10, 100, 100, 50, 50)
     Tank.LoadImage('res\sprite\up.png')
     bg = GameObject.Static_BG(0, 0, 800, 600)
@@ -16,7 +18,7 @@ def main ():
     block = GameObject.Block(0, 200, 200, 50, 50)
     block.health = 100
     blockG = Graphics.BaseObj.UniteSprite(block)
-    tile_lvl = LvlBuild.JustDoMyTileDict('res/lvl/lvl1.gen', 'res/lvl/lvl_conf.gen').Build_lvl('tiles', 'prepare',
+    tile_lvl = LvlBuild.JustDoMyTileLevel('res/lvl/lvl1.gen', 'res/lvl/lvl_conf.gen').Build_lvl('tiles', 'prepare',
                                                                                                'tile_size')
 
     bgG = Graphics.BaseObj.UniteSprite (bg)
@@ -28,7 +30,6 @@ def main ():
 
     while (isWorking):
         FPS.tick(60)
-
         #
         key = pygame.key.get_pressed()
         for event in pygame.event.get():
@@ -55,7 +56,7 @@ def main ():
             bgGMove.scroll_down()
 
         screen.fill(pygame.Color('#FFFFFF'))
-        bgG.draw(screen)
+        #bgG.draw(screen)
         tile_lvl.draw(screen)
         playerG.draw(screen)
         blockG.draw(screen)

@@ -103,7 +103,7 @@ class ParseLvlConf(object):
                     self.sprites[match.group(3)].append(tuple(accum))
         return self.sprites
 
-    def check_names (self, tiles_key, sprites_key):
+    def check_names(self, tiles_key, sprites_key):
         tiles = self.tiles_parce(tiles_key)
         sprt = self.sprites_parce(sprites_key)
 

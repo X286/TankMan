@@ -3,7 +3,7 @@
 import Parcer.readconfig as readconf
 import Graphics
 import Parcer.CreateTileMap
-import GameObject
+
 
 class GenerateGraphics (readconf.ParseLvlConf):
 
@@ -23,7 +23,6 @@ class GenerateGraphics (readconf.ParseLvlConf):
                         tiles_variable_dict [tiles_lst[tileinatlas][k][0]] = tile_atlas.cut_image(tiles_lst[tileinatlas][k][1], tiles_lst[tileinatlas][k][2], tile_size[0], tile_size[1])
                     else:
                         raise SyntaxError('value must have 2 coors x and y')
-
         self.tiles = tiles_variable_dict
         return self.tiles
 
@@ -47,7 +46,7 @@ class GenerateGraphics (readconf.ParseLvlConf):
         self.sprites = sprite_variable_keys
         return self.sprites
 
-class JustDoMyTileDict  (object):
+class JustDoMyTileLevel  (object):
     def __init__(self, mappath, tilespath):
         self.tiledMapa = Parcer.CreateTileMap.CreateTileMap(mappath).MapaTiles()
         self.generateTiles = GenerateGraphics(tilespath)
@@ -79,6 +78,26 @@ class JustDoMyTileDict  (object):
                 width += self.generateTiles.options[tileSize][0]
             heigth += self.generateTiles.options[tileSize][1]
         return united
+
+
+class JustPlaceMySpritesOnLevel (GenerateGraphics):
+    def __init__(self, spritepath, options):
+        super(JustPlaceMySpritesOnLevel, self).__init__(spritepath)
+        self.prepare_oprions(options)
+        print self.options
+
+    def setStaticSprites (self,sprtonlvl, sprtkey):
+        self.create_graphics_sprites(sprtkey)
+        keys = Parcer.CreateTileMap.CreateSptitesOnMap(sprtonlvl).SpritePlaced()
+        self.sprites
+        for key in keys.keys():
+            if self.sprites.has_key(key):
+                for item in keys[key]:
+                    print item
+            else:
+                raise SyntaxError ('variable not defined ' + key)
+JustPlaceMySpritesOnLevel('../res/lvl/lvl_conf.gen', 'prepare').setStaticSprites('../res/lvl/lvl1_sprt.gen', 'sprites')
+
 #JustDoMyTileDict ('../res/lvl/lvl1.gen', '../res/lvl/lvl_conf.gen').Build_lvl('tiles', 'prepare', 'tile_size')
 
 
