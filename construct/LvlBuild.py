@@ -1,8 +1,9 @@
 # coding=utf-8
 
 import Parcer.readconfig as readconf
-import Graphics
+import Graphics.BaseObj
 import Parcer.CreateTileMap
+import Parcer.CreateSpritesOnMap
 
 
 class GenerateGraphics (readconf.ParseLvlConf):
@@ -81,23 +82,19 @@ class JustDoMyTileLevel  (object):
 
 
 class JustPlaceMySpritesOnLevel (GenerateGraphics):
-    def __init__(self, spritepath, options):
+    def __init__(self, spritepath, sprites ,options):
         super(JustPlaceMySpritesOnLevel, self).__init__(spritepath)
         self.prepare_oprions(options)
-        print self.options
+        self.sprites_parce(sprites)
+        self.create_graphics_sprites('sprites')
 
-    def setStaticSprites (self,sprtonlvl, sprtkey):
-        self.create_graphics_sprites(sprtkey)
-        keys = Parcer.CreateTileMap.CreateSptitesOnMap(sprtonlvl).SpritePlaced()
-        self.sprites
-        for key in keys.keys():
-            if self.sprites.has_key(key):
-                for item in keys[key]:
-                    print item
-            else:
-                raise SyntaxError ('variable not defined ' + key)
-JustPlaceMySpritesOnLevel('../res/lvl/lvl_conf.gen', 'prepare').setStaticSprites('../res/lvl/lvl1_sprt.gen', 'sprites')
+    def PlaceSptites (self, name, sprtClass, speedX):
+        print self.sprites
+JustPlaceMySpritesOnLevel ('../res/lvl/lvl_conf.gen', 'sprites','prepare').PlaceSptites('Animated', Graphics.BaseObj.StaticSprite, 2)
 
+print Parcer.CreateSpritesOnMap.CreateSptitesOnMap ('../res/lvl/lvl1_sprt.gen', (50,50)).sptitedict
+#staticsprt = Graphics.BaseObj.StaticSprite
+#JustPlaceMySpritesOnLevel('../res/lvl/lvl_conf.gen', 'prepare').setStaticSprites('../res/lvl/lvl1_sprt.gen', 'sprites',staticsprt)
 #JustDoMyTileDict ('../res/lvl/lvl1.gen', '../res/lvl/lvl_conf.gen').Build_lvl('tiles', 'prepare', 'tile_size')
 
 

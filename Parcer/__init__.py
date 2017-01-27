@@ -1,2 +1,3 @@
 import readconfig
 import CreateTileMap
+import CreateSpritesOnMap
