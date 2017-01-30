@@ -13,9 +13,9 @@ b1 = (55,0, tiles_src1);
 c1 = (166, 166, tiles_src0);
 
 !sprites!
-sprites_src0 = '../res/sprite/t.jpg';
-sprites_src1 = '../res/sprite/up.png';
-sprites_src2 = '../res/sprite/left.png';
+sprites_src0 = 'res/sprite/down.png';
+sprites_src1 = 'res/sprite/up.png';
+sprites_src2 = 'res/sprite/left.png';
 a = (sprites_src0);
 b = (0,0, 50, 50, sprites_src1);
 c = (0,0, 50, 50, sprites_src2);

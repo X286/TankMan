@@ -19,7 +19,7 @@ class Block (Graphics.StaticSprite, Mech.Movement):
         self.health = -1
 
 
-#
+# Анимированный объект, например колыхающие
 class AnimatedObject (Graphics.AnimatedSprite, Mech.Movement):
     def __init__(self, MSpeedX, Gx, Gy, GW, GH, color='#00ffff', MSpeedY=-1):
         Graphics.AnimatedSprite.__init__(self, Gx, Gy, GW, GH, color=color)

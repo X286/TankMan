@@ -3,7 +3,7 @@ import re
 import Graphics.BaseObj
 import ast
 
-
+# Читает конфиг
 class ParseLvlConf(object):
 
     def __init__(self, lvl_conf_f):
@@ -27,7 +27,7 @@ class ParseLvlConf(object):
                 else:
                     raise SyntaxError ('! or ; missed at line: '+str (line_count))
         self.__check_errors()
-
+    #проверка конфига на общибки
     def __check_errors(self):
         line_count = 0
         for key in self.__prepared_parce.keys():
@@ -36,7 +36,7 @@ class ParseLvlConf(object):
                 match = re.findall("[a-zA-Z_0-9]+=([a-zA-Z0-9]+|\'|\()[a-zA-Z_0-9:,\\\./]+(\'|\))", element)
                 if match == []:
                     raise SyntaxError ('Error at ' + element)
-
+    # подготовка словаря опций
     def prepare_oprions (self, key):
         if self.__prepared_parce.has_key(key):
             for option in self.__prepared_parce[key]:
@@ -47,7 +47,7 @@ class ParseLvlConf(object):
                 self.options[match.group(1)] = ast.literal_eval(match.group(2))
         else:
             raise SyntaxError ('Coud not find options!')
-
+    # подготовка тайлов
     def tiles_parce(self, tiles_key):
         tiles_key = self.__get_Key(tiles_key)
         tiles_varibles = dict()
@@ -78,7 +78,7 @@ class ParseLvlConf(object):
 
         self.tiles = tiles_varibles
         return self.tiles
-
+    # подготовка тайлов
     def sprites_parce(self, sprite_key):
         sprites_list = self.__prepared_parce[sprite_key]
         for sprites_item in sprites_list:
@@ -102,7 +102,7 @@ class ParseLvlConf(object):
                         accum.append(int(integer))
                     self.sprites[match.group(3)].append(tuple(accum))
         return self.sprites
-
+    # опция проверки не повторения имен переменных
     def check_names(self, tiles_key, sprites_key):
         tiles = self.tiles_parce(tiles_key)
         sprt = self.sprites_parce(sprites_key)

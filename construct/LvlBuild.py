@@ -5,7 +5,7 @@ import Graphics.BaseObj
 import Parcer.CreateTileMap
 import Parcer.CreateSpritesOnMap
 
-
+# Генератор Графики, данный класс читает конфиг и возвращает словари спрайтов и тайлов.
 class GenerateGraphics (readconf.ParseLvlConf):
 
     def __init__(self, lvl_conf):
@@ -47,11 +47,12 @@ class GenerateGraphics (readconf.ParseLvlConf):
         self.sprites = sprite_variable_keys
         return self.sprites
 
+# Делает тайловый уровнь, заполняя его объектами staticSprite
 class JustDoMyTileLevel  (object):
     def __init__(self, mappath, tilespath):
         self.tiledMapa = Parcer.CreateTileMap.CreateTileMap(mappath).MapaTiles()
         self.generateTiles = GenerateGraphics(tilespath)
-
+    # Заполнение словаря нужной формы
     def DictFillSurfaces(self, wheretiles, oprions_key, tileSize):
         self.generateTiles.tiles_parce(wheretiles)
         self.generateTiles.prepare_oprions(oprions_key)
@@ -63,7 +64,7 @@ class JustDoMyTileLevel  (object):
                 line_container.append(surfaces[element])
             mapa_construct.append(line_container)
         return mapa_construct
-
+    # Компановка и построение тайлового уровня
     def Build_lvl(self, wheretiles, oprions_key, tileSize):
         mapl = self.DictFillSurfaces(wheretiles, oprions_key, tileSize)
         united = Graphics.BaseObj.UniteSprite()
@@ -80,19 +81,33 @@ class JustDoMyTileLevel  (object):
             heigth += self.generateTiles.options[tileSize][1]
         return united
 
-
+# Расстановка спрайтов. На тайловой карте.
 class JustPlaceMySpritesOnLevel (GenerateGraphics):
     def __init__(self, spritepath, sprites ,options):
         super(JustPlaceMySpritesOnLevel, self).__init__(spritepath)
         self.prepare_oprions(options)
         self.sprites_parce(sprites)
-        self.create_graphics_sprites('sprites')
+        self.create_graphics_sprites(sprites)
 
-    def PlaceSptites (self, name, sprtClass, speedX):
-        print self.sprites
-JustPlaceMySpritesOnLevel ('../res/lvl/lvl_conf.gen', 'sprites','prepare').PlaceSptites('Animated', Graphics.BaseObj.StaticSprite, 2)
+    # Указание скоорсти по умолчанию 0, но если вы делаете активные объекты, то скорость необходимо указать
+    def PlaceSptites (self, pathsprt, name, sprtClass, speedX=0, speedY=0):
+        parced_sprt = Parcer.CreateSpritesOnMap.CreateSptitesOnMap(pathsprt, self.options['tile_size']).sptitedict[name]
+        group = Graphics.BaseObj.UniteSprite ()
+        for key in parced_sprt.keys():
+            for item in parced_sprt[key]:
+                print item
+                created = sprtClass (0,0,10,10, color = '#000000')
+                created.rect.x = item[0]
+                created.rect.y = item[1]
+                created.image = self.sprites[key]
+                if hasattr(created, 'setSpeed'):
+                    created.setSpeed (speedX, speedY)
+                group.add(created)
+                print created.rect.x, created.rect.y, self.options['tile_size'][0], self.options['tile_size'][1]
+        return group
 
-print Parcer.CreateSpritesOnMap.CreateSptitesOnMap ('../res/lvl/lvl1_sprt.gen', (50,50)).sptitedict
+
+#print Parcer.CreateSpritesOnMap.CreateSptitesOnMap ('../res/lvl/lvl1_sprt.gen', (50,50)).sptitedict
 #staticsprt = Graphics.BaseObj.StaticSprite
 #JustPlaceMySpritesOnLevel('../res/lvl/lvl_conf.gen', 'prepare').setStaticSprites('../res/lvl/lvl1_sprt.gen', 'sprites',staticsprt)
 #JustDoMyTileDict ('../res/lvl/lvl1.gen', '../res/lvl/lvl_conf.gen').Build_lvl('tiles', 'prepare', 'tile_size')

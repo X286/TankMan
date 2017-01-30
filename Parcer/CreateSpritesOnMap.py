@@ -10,7 +10,7 @@ class CreateSptitesOnMap(object):
         except:
             raise IOError ('Coud not open sprite file' + spritepathf)
         self.__split_sprites_to_dict(tile_size)
-
+    #syntax [!Name! varible {posx, posy};...etc] - create sprites on map
     def __split_sprites_to_dict(self, tile_size):
         openedSprites = 0
         closedSprites = 0
@@ -29,6 +29,7 @@ class CreateSptitesOnMap(object):
                 closedSprites += 1
             else:
                 mached = re.match('(([a-zA-Z][a-zA-Z0-9]*)\{([0-9]+),([0-9]+)\}[,;])+', line)
+                #print mached.group(0)
                 if not self.sptitedict[currentkey].has_key(mached.group(2)):
                     self.sptitedict[currentkey][mached.group(2)] = [(tile_size[0]*int(mached.group(3)), tile_size[1]*int(mached.group(4)))]
                 else:
@@ -38,4 +39,4 @@ class CreateSptitesOnMap(object):
             raise SyntaxError('cloded or opened tag ] [!text! messed!')
 
 
-#CreateSptitesOnMap ('../res/lvl/lvl1_sprt.gen', (50,50))
+#print CreateSptitesOnMap ('../res/lvl/lvl1_sprt.gen', (50,50)).sptitedict
