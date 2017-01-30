@@ -7,7 +7,6 @@ import pygame
 import Mech
 
 def main ():
-
     screen = pygame.display.set_mode((800, 600))
     pygame.display.set_caption('TankMan')
     Tank = GameObject.Player(10, 100, 100, 50, 50)
@@ -15,23 +14,19 @@ def main ():
     bg = GameObject.Static_BG(0, 0, 800, 600)
     bg.LoadImage('res/bg/ccc.jpg')
     playerG = Graphics.BaseObj.UniteSprite(Tank)
-    block = GameObject.Block(0, 200, 200, 50, 50)
-    block.health = 100
-    blockG = Graphics.BaseObj.UniteSprite(block)
+    #block = GameObject.Block(0, 200, 200, 50, 50)
+    #block.health = 100
+    #blockG = Graphics.BaseObj.UniteSprite(block)
     tile_lvl = LvlBuild.JustDoMyTileLevel('res/lvl/lvl1.gen', 'res/lvl/lvl_conf.gen').Build_lvl('tiles', 'prepare',
                                                                                                'tile_size')
-
     spritesG = LvlBuild.JustPlaceMySpritesOnLevel('res/lvl/lvl_conf.gen', 'sprites', 'prepare').PlaceSptites('res/lvl/lvl1_sprt.gen',
                                                                                             'Static',
-                                                                                            Graphics.BaseObj.StaticSprite,
-                                                                                                2, 2)
-    print spritesG
-    bgG = Graphics.BaseObj.UniteSprite (bg)
-    bgGMove = Mech.Mech.ScrollingSimple(pygame.Rect(50,50, 640, 480), bg, Tank, [bgG, blockG, tile_lvl, spritesG], screensize=screen.get_size())
+                                                                                            Graphics.BaseObj.StaticSprite, 2, 2)
+    bgG = Graphics.BaseObj.UniteSprite(bg)
+    bgGMove = Mech.Mech.ScrollingSimple(pygame.Rect(50,50, 640, 480), bg, Tank, [bgG, tile_lvl, spritesG], screensize=screen.get_size())
     pygame.init()
     FPS = pygame.time.Clock()
     isWorking=True
-
 
     while (isWorking):
         FPS.tick(60)
@@ -60,12 +55,12 @@ def main ():
             Tank.set_direction(False, False, False, True)
             bgGMove.scroll_down()
 
-        screen.fill(pygame.Color('#FFFFFF'))
-        bgG.draw(screen)
+        #screen.fill(pygame.Color('#FFFFFF'))
+        #bgG.draw(screen)
         tile_lvl.draw(screen)
         spritesG.draw(screen)
         playerG.draw(screen)
-        blockG.draw(screen)
+        #blockG.draw(screen)
 
 
         pygame.display.flip()

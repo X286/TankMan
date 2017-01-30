@@ -12,7 +12,7 @@ class Static_BG (Graphics.GraphicObject):
 
 # Вызов Блока с движением (например какой то заградительный блок, например передвижной бетонный блок)
 class Block (Graphics.StaticSprite, Mech.Movement):
-    def __init__(self, MSpeedX, Gx, Gy, GW, GH, color = '#00ff00', MSpeedY = -1):
+    def __init__(self, Gx, Gy, GW, GH, color = '#00ff00', MSpeedX=-1, MSpeedY = -1 ):
         Graphics.StaticSprite.__init__(self, Gx, Gy, GW, GH, color=color)
         Mech.Movement.__init__(self, MSpeedX, MSpeedY)
         # -1 - не убиваемый блок, 0 - прозрачный блок (кусты) - остальное можно уничтожить (HP)
@@ -21,7 +21,7 @@ class Block (Graphics.StaticSprite, Mech.Movement):
 
 # Анимированный объект, например колыхающие
 class AnimatedObject (Graphics.AnimatedSprite, Mech.Movement):
-    def __init__(self, MSpeedX, Gx, Gy, GW, GH, color='#00ffff', MSpeedY=-1):
+    def __init__(self, Gx, Gy, GW, GH, color='#00ffff',MSpeedX =-1, MSpeedY=-1):
         Graphics.AnimatedSprite.__init__(self, Gx, Gy, GW, GH, color=color)
         Mech.Movement.__init__(self, MSpeedX, MSpeedY)
         # -1 - не убиваемый блок, 0 - прозрачный блок (кусты) - остальное можно уничтожить (HP)

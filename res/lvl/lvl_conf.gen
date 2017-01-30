@@ -9,7 +9,7 @@ lvl_in_tiles = (20, 20);
 tiles_src0 = 'res/tiles/terrain.jpg';
 tiles_src1 = 'res/tiles/t.jpg';
 a1=(tiles_src0);
-b1 = (55,0, tiles_src1);
+b1 = (55,1, tiles_src1);
 c1 = (166, 166, tiles_src0);
 
 !sprites!

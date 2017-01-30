@@ -95,15 +95,15 @@ class JustPlaceMySpritesOnLevel (GenerateGraphics):
         group = Graphics.BaseObj.UniteSprite ()
         for key in parced_sprt.keys():
             for item in parced_sprt[key]:
-                print item
-                created = sprtClass (0,0,10,10, color = '#000000')
+
+                created = sprtClass (0, 0, 0, 0, color = '#00FFAA')
                 created.rect.x = item[0]
                 created.rect.y = item[1]
                 created.image = self.sprites[key]
                 if hasattr(created, 'setSpeed'):
-                    created.setSpeed (speedX, speedY)
+                    created.setSpeed(speedX, speedY)
                 group.add(created)
-                print created.rect.x, created.rect.y, self.options['tile_size'][0], self.options['tile_size'][1]
+                
         return group
 
 

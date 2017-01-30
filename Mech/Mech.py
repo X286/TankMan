@@ -6,20 +6,21 @@ class Movement(object):
     def __init__(self, speedX, speedY = -1):
         if speedY == -1:
             speedY = speedX
-
         self.speedX = speedX
         self.speedY = speedY
-
 
     def move_left(self):
         self.rect.x -= self.speedX
         return self.rect
+
     def move_right(self):
         self.rect.x += self.speedX
         return self.rect
+
     def move_up(self):
         self.rect.y -= self.speedY
         return self.rect
+
     def move_down(self):
         self.rect.y += self.speedY
         return self.rect
@@ -94,7 +95,7 @@ class ScrollingSimple(Movement):
 
             self.player.move_left()
         else:
-            if self.maincence.x + self.scroll_rect.x < self.scroll_rect.x - self.player.speedX:
+            if self.maincence.x + self.scroll_rect.x <= self.scroll_rect.x - self.player.speedX:
                 for group in self.sprite_groups:
                     for item in group:
                         item.rect.x += self.player.speedX
