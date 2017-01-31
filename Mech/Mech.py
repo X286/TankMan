@@ -63,6 +63,8 @@ class ShootEmUpScroll(Movement):
                 one.rect.y += self.speedY
 
 
+# коллизия RECT
+
 # Прокрутка.
 # 1 - pygame.Rect - прямоугольник в котором не происходит скроллинга
 # 2 - pygame.Rect - текущая сцена на вход можно подать sprite (а так же его наследников) или rect

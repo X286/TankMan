@@ -76,7 +76,7 @@ class JustDoMyTileLevel  (object):
                 sprite.setSurface(item)
                 sprite.rect.x = width
                 sprite.rect.y = heigth
-                united.add (sprite)
+                united.add(sprite)
                 width += self.generateTiles.options[tileSize][0]
             heigth += self.generateTiles.options[tileSize][1]
         return united
@@ -90,20 +90,23 @@ class JustPlaceMySpritesOnLevel (GenerateGraphics):
         self.create_graphics_sprites(sprites)
 
     # Указание скоорсти по умолчанию 0, но если вы делаете активные объекты, то скорость необходимо указать
-    def PlaceSptites (self, pathsprt, name, sprtClass, speedX=0, speedY=0):
+    def PlaceSptites (self, pathsprt, name, sprtClass, speedX=0, speedY=0, health = None):
         parced_sprt = Parcer.CreateSpritesOnMap.CreateSptitesOnMap(pathsprt, self.options['tile_size']).sptitedict[name]
-        group = Graphics.BaseObj.UniteSprite ()
+        group = Graphics.BaseObj.UniteSprite()
         for key in parced_sprt.keys():
             for item in parced_sprt[key]:
-
                 created = sprtClass (0, 0, 0, 0, color = '#00FFAA')
                 created.rect.x = item[0]
                 created.rect.y = item[1]
                 created.image = self.sprites[key]
+                size = created.image.get_size()
+                created.rect.width = size[0]
+                created.rect.height = size[1]
                 if hasattr(created, 'setSpeed'):
                     created.setSpeed(speedX, speedY)
+                if hasattr(created, 'set_health'):
+                    created.set_health(health)
                 group.add(created)
-                
         return group
 
 

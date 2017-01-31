@@ -2,7 +2,7 @@
 lvl_scene = (50, 2);
 bg_color = (255,255,255); # comment 1
 tile_size = (47, 47);
-lvl_in_tiles = (20, 20);
+lvl_size_in_pix = (2683, 1059);
 
 
 !tiles!
