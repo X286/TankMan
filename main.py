@@ -14,7 +14,7 @@ def main():
     #Указываем размер сцены
     bg = GameObject.Static_BG(0, 0, 2683, 1059)
     #Инициализация игрока
-    Tank = GameObject.Player(100, 100, 50, 50, MSpeedX=10, MSpeedY=10)
+    Tank = GameObject.Player(50, 50, 50, 50, MSpeedX=4, MSpeedY=4)
     Tank.LoadImage('res\sprite\up.png')
     playerG = Graphics.BaseObj.UniteSprite(Tank)
 
@@ -23,35 +23,33 @@ def main():
     spritesG = LvlBuild.JustPlaceMySpritesOnLevel('res/lvl/lvl_conf.gen', 'sprites', 'prepare').PlaceSptites('res/lvl/lvl1_sprt.gen',
                                                                                             'Static',
                                                                                             GameObject.Block, 2, 2)
-    bgG = Graphics.BaseObj.UniteSprite(bg)
-    bgGMove = Mech.Mech.ScrollingSimple(pygame.Rect(50,50, 640, 480), bg, Tank, [bgG, tile_lvl, spritesG], screensize=screen.get_size())
+    #bgG = Graphics.BaseObj.UniteSprite(bg)
+    scrolling = Mech.Mech.ScrollingSimple(Tank, pygame.Rect(50, 50, 640, 480), bg, screen, [tile_lvl, spritesG])
     pygame.init()
     FPS = pygame.time.Clock()
     isWorking=True
+    speedXL, speedXR, speedYU, speedYD = -10, 10, -10, 10
     while (isWorking):
         FPS.tick(60)
         key = pygame.key.get_pressed()
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 isWorking = False
-
         if key[pygame.K_LEFT]:
-            Tank.set_direction(True, False, False, False)
-            bgGMove.scroll_left()
-
+            dxdy = Tank.move(speedXL, 0)
+            scrolling.scroll_left(dxdy)
         if key[pygame.K_RIGHT]:
-            Tank.set_direction(False, True, False, False)
-            bgGMove.scroll_right()
-
+            dxdy = Tank.move(speedXR, 0)
+            scrolling.scroll_right(dxdy)
         if key[pygame.K_UP]:
-            Tank.set_direction(False, False, True, False)
-
-            bgGMove.scroll_up()
-
+            dxdy = Tank.move(0, speedYU)
+            scrolling.scroll_up(dxdy)
         if key[pygame.K_DOWN]:
-            Tank.set_direction(False, False, False, True)
-            bgGMove.scroll_down()
-        GameObject.Collide_United(playerG, spritesG,False, False)
+            dxdy = Tank.move(0, speedYD)
+            scrolling.scroll_down(dxdy)
+
+
+        GameObject.Collide_United(spritesG, playerG, False, False)
         tile_lvl.draw(screen)
         spritesG.draw(screen)
         playerG.draw(screen)
