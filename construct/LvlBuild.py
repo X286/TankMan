@@ -90,7 +90,7 @@ class JustPlaceMySpritesOnLevel (GenerateGraphics):
         self.create_graphics_sprites(sprites)
 
     # Указание скоорсти по умолчанию 0, но если вы делаете активные объекты, то скорость необходимо указать
-    def PlaceSptites (self, pathsprt, name, sprtClass, speedX=0, speedY=0, health = None):
+    def PlaceSptites (self, pathsprt, name, sprtClass, health = None):
         parced_sprt = Parcer.CreateSpritesOnMap.CreateSptitesOnMap(pathsprt, self.options['tile_size']).sptitedict[name]
         group = Graphics.BaseObj.UniteSprite()
         for key in parced_sprt.keys():
@@ -102,8 +102,7 @@ class JustPlaceMySpritesOnLevel (GenerateGraphics):
                 size = created.image.get_size()
                 created.rect.width = size[0]
                 created.rect.height = size[1]
-                if hasattr(created, 'setSpeed'):
-                    created.setSpeed(speedX, speedY)
+
                 if hasattr(created, 'set_health'):
                     created.set_health(health)
                 group.add(created)

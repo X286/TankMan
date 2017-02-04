@@ -3,8 +3,7 @@
 import pygame
 
 class Movement (object):
-    def __init__(self):
-        pass
+
     def move(self, dx, dy):
         if dx != 0:
             self.rect.centerx += dx
@@ -12,20 +11,32 @@ class Movement (object):
             self.rect.centery += dy
         return (dx, dy)
 
-class collideGroup (object):
-    def __init__(self):
-        pass
-    def collide_left (self, G1, G2, isKill1, isKill2):
-        collget = pygame.sprite.groupcollide(G1, G2, isKill1, isKill2)
 
-    def collide_right(self, G1, G2, isKill1, isKill2):
-        collget = pygame.sprite.groupcollide(G1, G2, isKill1, isKill2)
+class Collides (object):
+    @staticmethod
+    def collide_walls (tdxdy, G1, G2, DoKill1, DoKill2):
+        if tdxdy != (0,0):
+            collide_g = pygame.sprite.groupcollide(G1, G2, DoKill1, DoKill2)
+            if collide_g != {}:
+                if tdxdy[0] > 0: # right collision
+                    for key in collide_g.keys():
+                        for sprt in collide_g[key]:
+                            key.rect.right = sprt.rect.left
 
-    def collide_up(self, G1, G2, isKill1, isKill2):
-        collget = pygame.sprite.groupcollide(G1, G2, isKill1, isKill2)
+                if tdxdy[0] < 0: # left collision
+                    for key in collide_g.keys():
+                        for sprt in collide_g[key]:
+                            key.rect.left = sprt.rect.right
 
-    def collide_down(self, G1, G2, isKill1, isKill2):
-        collget = pygame.sprite.groupcollide(G1, G2, isKill1, isKill2)
+                if tdxdy[1] < 0: # up collision
+                    for key in collide_g.keys():
+                        for sprt in collide_g[key]:
+                            key.rect.top = sprt.rect.bottom
+
+                if tdxdy[1] >0: # Down collision
+                    for key in collide_g.keys():
+                        for sprt in collide_g[key]:
+                            key.rect.bottom = sprt.rect.top
 
 # Прокрутка.
 # 1 - pygame.Rect - прямоугольник в котором не происходит скроллинга

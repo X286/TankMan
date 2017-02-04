@@ -9,12 +9,12 @@ import Mech
 def main():
 
     screen = pygame.display.set_mode((800, 600))
-    #Название игры
+    # Название игры
     pygame.display.set_caption('TankMan')
-    #Указываем размер сцены
+    # Указываем размер сцены
     bg = GameObject.Static_BG(0, 0, 2683, 1059)
-    #Инициализация игрока
-    Tank = GameObject.Player(50, 50, 50, 50, MSpeedX=4, MSpeedY=4)
+    # Инициализация игрока
+    Tank = GameObject.Player(50, 50, 50, 50)
     Tank.LoadImage('res\sprite\up.png')
     playerG = Graphics.BaseObj.UniteSprite(Tank)
 
@@ -22,7 +22,7 @@ def main():
                                                                                                'tile_size')
     spritesG = LvlBuild.JustPlaceMySpritesOnLevel('res/lvl/lvl_conf.gen', 'sprites', 'prepare').PlaceSptites('res/lvl/lvl1_sprt.gen',
                                                                                             'Static',
-                                                                                            GameObject.Block, 2, 2)
+                                                                                            GameObject.Block)
     #bgG = Graphics.BaseObj.UniteSprite(bg)
     scrolling = Mech.Mech.ScrollingSimple(Tank, pygame.Rect(50, 50, 640, 480), bg, screen, [tile_lvl, spritesG])
     pygame.init()
@@ -37,19 +37,23 @@ def main():
                 isWorking = False
         if key[pygame.K_LEFT]:
             dxdy = Tank.move(speedXL, 0)
+
+            Mech.Mech.Collides.collide_walls(dxdy, playerG, spritesG, False, False)
             scrolling.scroll_left(dxdy)
         if key[pygame.K_RIGHT]:
             dxdy = Tank.move(speedXR, 0)
+            Mech.Mech.Collides.collide_walls(dxdy, playerG, spritesG, False, False)
             scrolling.scroll_right(dxdy)
         if key[pygame.K_UP]:
             dxdy = Tank.move(0, speedYU)
+            Mech.Mech.Collides.collide_walls(dxdy, playerG, spritesG, False, False)
             scrolling.scroll_up(dxdy)
         if key[pygame.K_DOWN]:
             dxdy = Tank.move(0, speedYD)
+            Mech.Mech.Collides.collide_walls(dxdy, playerG, spritesG, False, False)
             scrolling.scroll_down(dxdy)
 
 
-        GameObject.Collide_United(spritesG, playerG, False, False)
         tile_lvl.draw(screen)
         spritesG.draw(screen)
         playerG.draw(screen)

@@ -39,7 +39,7 @@ class AnimatedObject (Graphics.AnimatedSprite, Mech.Movement):
 
 # Игрок класс
 class Player(Graphics.AnimatedSprite, Mech.Movement):
-    def __init__(self, Gx, Gy, GW, GH, color='#00ffff',MSpeedX = 0, MSpeedY=0):
+    def __init__(self, Gx, Gy, GW, GH, color='#00ffff'):
         Graphics.AnimatedSprite.__init__(self, Gx, Gy, GW, GH, color=color)
         Mech.Movement.__init__(self)
         self.hit_power = 50
