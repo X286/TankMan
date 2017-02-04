@@ -11,7 +11,7 @@ class Static_BG (Graphics.GraphicObject):
 
 # Вызов Блока с движением (например какой то заградительный блок, например передвижной бетонный блок)
 class Block (Graphics.StaticSprite, Mech.Movement):
-    def __init__(self, Gx, Gy, GW, GH, color = '#00ff00', MSpeedX=-1, MSpeedY = -1, health=None):
+    def __init__(self, Gx, Gy, GW, GH, color = '#00ff00', health=None):
         Graphics.StaticSprite.__init__(self, Gx, Gy, GW, GH, color=color)
         Mech.Movement.__init__(self)
         # -1 - не убиваемый блок, 0 - прозрачный блок (кусты) - остальное можно уничтожить (HP)
@@ -25,7 +25,7 @@ class Block (Graphics.StaticSprite, Mech.Movement):
 
 # Анимированный объект, например колыхающие деревья
 class AnimatedObject (Graphics.AnimatedSprite, Mech.Movement):
-    def __init__(self, Gx, Gy, GW, GH, color='#00ffff',MSpeedX =0, MSpeedY=0, health= None):
+    def __init__(self, Gx, Gy, GW, GH, color='#00ffff', health= None):
         Graphics.AnimatedSprite.__init__(self, Gx, Gy, GW, GH, color=color)
         Mech.Movement.__init__(self)
         # None - не убиваемый блок, 0 - прозрачный блок (кусты) - остальное можно уничтожить (HP)
@@ -43,6 +43,39 @@ class Player(Graphics.AnimatedSprite, Mech.Movement):
         Graphics.AnimatedSprite.__init__(self, Gx, Gy, GW, GH, color=color)
         Mech.Movement.__init__(self)
         self.hit_power = 50
+
+
+class LaserShooting (Block):
+    def __init__(self, playersprt):
+        super(LaserShooting, self).__init__(10, 10, 800, 2, color='#FFFFFF')
+        self.playser = playersprt
+        self.damage = 100
+
+    def set_damage(self, damage):
+        self.damage = damage
+
+    def shoot(self, dxdy, laserLeng):
+        if dxdy[0] > 0:
+            self.rect.left = self.playser.rect.centerx
+            self.rect.y = self.playser.rect.centery
+
+        if dxdy[0] < 0:
+            self.rect.right = self.playser.rect.centerx
+            self.rect.y = self.playser.rect.centery
+
+        if dxdy[1] > 0:
+            self.image = pygame.Surface(laserLeng)
+            self.changeColor('#FFFFFF')
+            self.rect = self.image.get_rect()
+            self.rect.y = self.playser.rect.centery
+            self.rect.x = self.playser.rect.centerx
+
+        if dxdy[1] < 0:
+            self.image = pygame.Surface(laserLeng)
+            self.rect = self.image.get_rect()
+            self.changeColor('#FFFFFF')
+            self.rect.y = self.playser.rect.centery-800
+            self.rect.x = self.playser.rect.centerx - 2
 
 
 #  Класс - снаряд, точнее его полет
@@ -101,14 +134,5 @@ class Bullet(Graphics.AnimatedSprite, Mech.Movement):
 
 class Enemy(object): pass
 
-# Класс проверки на коллизию
-# Построено все на центрах
 
-class Collide_United (object):
-    def __init__(self, group1, group2, doKill1, doKill2):
-        collide = pygame.sprite.groupcollide(group1, group2, doKill1, doKill2)
-        for keyz in collide:
-            for sprt in collide[keyz]:
-                if hasattr(sprt, 'set_health'):
-                    pass
 

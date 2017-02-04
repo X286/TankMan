@@ -37,7 +37,9 @@ class Collides (object):
                     for key in collide_g.keys():
                         for sprt in collide_g[key]:
                             key.rect.bottom = sprt.rect.top
-
+    @staticmethod
+    def shooting_collide (tdxdy, G1, G2, DoKill1, DoKill2):
+        pass
 # Прокрутка.
 # 1 - pygame.Rect - прямоугольник в котором не происходит скроллинга
 # 2 - pygame.Rect - текущая сцена на вход можно подать sprite (а так же его наследников) или rect

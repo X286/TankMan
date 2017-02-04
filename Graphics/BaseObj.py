@@ -25,6 +25,9 @@ class GraphicObject(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.rect.x, self.rect.y = x, y
 
+    def changeColor (self, color):
+        self.image.fill(pygame.Color(color))
+
     def setSurface(self, surface):
         x, y = self.rect.x, self.rect.y
         self.image = surface
