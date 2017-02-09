@@ -25,8 +25,10 @@ class GraphicObject(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.rect.x, self.rect.y = x, y
 
-    def changeColor (self, color):
+
+    def changeColor(self, color):
         self.image.fill(pygame.Color(color))
+
 
     def setSurface(self, surface):
         x, y = self.rect.x, self.rect.y
@@ -34,17 +36,15 @@ class GraphicObject(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.rect.x, self.rect.y = x, y
 
-    def get_size (self):
+    def get_size(self):
         return self.image.get_size()
 
-    def get_current_pos (self):
+    def get_current_pos(self):
         return self.rect
 
     def draw(self, screen):
-        screen.blit (self.image, (self.rect.x, self.rect.y))
+        screen.blit(self.image, (self.rect.x, self.rect.y))
         
-
-
 
 # Класс этот будет храниться в памяти пока не закроется программа.
 # Я это сделал потому, что тайлы и спрайты нужны протяжении всей игры.

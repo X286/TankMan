@@ -20,5 +20,8 @@ a = (0,0, 47, 47, sprites_src0);
 b = (0,0, 47, 47, sprites_src1);
 c = (0,0, 47, 47, sprites_src2);
 
+!text_baloon_sprt_bg!
+a = (0,0, 800, 100, sprites_src0)
+
 !animation!
 PlayerLeft = (a:30,b:30,c:15); # где 30 15 милисекунды

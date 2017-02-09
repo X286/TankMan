@@ -7,8 +7,8 @@ import Mech
 
 
 def main():
-
-    screen = pygame.display.set_mode((800, 600))
+    display_size = (800, 600)
+    screen = pygame.display.set_mode(display_size)
     # Название игры
     pygame.display.set_caption('TankMan')
     # Указываем размер сцены
@@ -17,19 +17,20 @@ def main():
     Tank = GameObject.Player(50, 50, 50, 50)
     Tank.LoadImage('res\sprite\up.png')
     playerG = Graphics.BaseObj.UniteSprite(Tank)
-
     tile_lvl = LvlBuild.JustDoMyTileLevel('res/lvl/lvl1.gen', 'res/lvl/lvl_conf.gen').Build_lvl('tiles', 'prepare',
                                                                                                'tile_size')
     spritesG = LvlBuild.JustPlaceMySpritesOnLevel('res/lvl/lvl_conf.gen', 'sprites', 'prepare').PlaceSptites('res/lvl/lvl1_sprt.gen',
                                                                                             'Static',
                                                                                             GameObject.Block)
-
     scrolling = Mech.Mech.ScrollingSimple(Tank, pygame.Rect(50, 50, 640, 480), bg, screen, [tile_lvl, spritesG])
     pygame.init()
     FPS = pygame.time.Clock()
     isWorking=True
     speedXL, speedXR, speedYU, speedYD = -10, 10, -10, 10
     previousmove = (0,0)
+
+    bulletz = GameObject.BulletGroup()
+
     while (isWorking):
         FPS.tick(60)
         key = pygame.key.get_pressed()
@@ -62,14 +63,20 @@ def main():
             previousmove = (dxdy)
 
         if key[pygame.K_SPACE]:
-            laser = GameObject.LaserShooting(Tank)
-            laser.shoot(previousmove, (2, 800))
-            print pygame.sprite.groupcollide(Graphics.BaseObj.UniteSprite(laser), spritesG, False, False)
-            laser.draw(screen)
+            b = GameObject.Bullet(Tank, 5, 5)
+            b.set_direction_and_speed(previousmove[0], previousmove[1],2)
+            bulletz.add(b)
+            # Выстрел лазера необходимо перпеписать ввиду размеров видимого экрана
+            #laser = GameObject.LaserShooting(Tank)
+            #laser.shoot(previousmove, (2, 800))
+            #print pygame.sprite.groupcollide(Graphics.BaseObj.UniteSprite(laser), spritesG, False, False)
+            #laser.draw(screen)
 
         tile_lvl.draw(screen)
         spritesG.draw(screen)
         playerG.draw(screen)
+        bulletz.deleteBullet(display_size[0], display_size[1], spritesG)
+        bulletz.draw(screen)
 
         pygame.display.flip()
 

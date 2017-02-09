@@ -77,59 +77,41 @@ class LaserShooting (Block):
             self.rect.y = self.playser.rect.centery-800
             self.rect.x = self.playser.rect.centerx - 2
 
-
 #  Класс - снаряд, точнее его полет
-class Bullet(Graphics.AnimatedSprite, Mech.Movement):
-    def __init__(self, player, MSpeedX, Gx, Gy, GW, GH, color='#00ffff', MSpeedY=-1):
-        Graphics.AnimatedSprite.__init__(self, Gx, Gy, GW, GH, color=color)
+class Bullet(Block, Mech.Movement):
+    def __init__(self, player, width, height):
+        Block.__init__(self, player.rect.centerx, player.rect.centery, width, height)
         Mech.Movement.__init__(self)
-        self.player = player
-        self.rect.x = player.rect.x + Gx
-        self.rect.y = player.rect.y + Gy
-        self.range = 500
-        self.__range_count = 0
-        self.isExsist = True
-        self.bulletDirection = []
+        self.__direction = (0, 0)
+
+    def set_direction_and_speed (self, x, y, speed):
+        self.__direction = (x*speed, y*speed)
+
+    def get_direction_and_speed (self):
+        return self.__direction
 
 
-    def set_direction(self):
-            self.bulletDirection = self.player.direction
+class BulletGroup(Graphics.UniteSprite):
+    def __init__(self, *sprites):
+        super(BulletGroup, self).__init__(sprites)
 
-    def shoot_right(self):
-        if self.range > self.__range_count:
-            self.move_right()
-            self.__range_count += self.speedX
-            self.isExsist = True
-        else:
-            self.isExsist = False
-        return self.isExsist
+    def deleteBullet (self, width, height, *collideG):
 
-    def shoot_left(self):
-        if self.range > self.__range_count:
-            self.move_left()
-            self.__range_count += self.speedX
-            self.isExsist = True
-        else:
-            self.isExsist = False
-        return self.isExsist
+        for sprt in self:
+            if sprt.rect.x > width or sprt.rect.x < 0:
+                self.remove(sprt)
+            elif sprt.rect.y < 0 or sprt.rect.y > height:
+                self.remove(sprt)
+        for collided in collideG:
 
-    def shoot_up(self):
-        if self.range > self.__range_count:
-            self.move_up()
-            self.__range_count += self.speedY
-            self.isExsist = True
-        else:
-            self.isExsist = False
-        return self.isExsist
+            if pygame.sprite.groupcollide(self, collided, False, False) != {}:
+                print 'BANG'
 
-    def shoot_down(self):
-        if self.range > self.__range_count:
-            self.move_down()
-            self.__range_count += self.speedY
-            self.isExsist = True
-        else:
-            self.isExsist = False
-        return self.isExsist
+
+    def draw(self, screen):
+        for sprt in self.sprites():
+            sprt.move(sprt.get_direction_and_speed()[0], sprt.get_direction_and_speed()[1])
+            screen.blit(sprt.image, (sprt.rect.x, sprt.rect.y))
 
 
 class Enemy(object): pass
