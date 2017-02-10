@@ -4,7 +4,8 @@ import construct.LvlBuild as LvlBuild
 import Graphics.BaseObj
 import pygame
 import Mech
-
+import TextsAndFonts.Text as TBaloon
+import Parcer
 
 def main():
     display_size = (800, 600)
@@ -22,14 +23,24 @@ def main():
     spritesG = LvlBuild.JustPlaceMySpritesOnLevel('res/lvl/lvl_conf.gen', 'sprites', 'prepare').PlaceSptites('res/lvl/lvl1_sprt.gen',
                                                                                             'Static',
                                                                                             GameObject.Block)
-    scrolling = Mech.Mech.ScrollingSimple(Tank, pygame.Rect(50, 50, 640, 480), bg, screen, [tile_lvl, spritesG])
+    dialog_sprt = LvlBuild.JustPlaceMySpritesOnLevel('res/lvl/lvl_conf.gen', 'dialog', 'prepare').sprites
+
+    bulletz = GameObject.BulletGroup()
+    scrolling = Mech.Mech.ScrollingSimple(Tank, pygame.Rect(50, 50, 640, 480), bg, screen, [tile_lvl, spritesG, bulletz])
     pygame.init()
     FPS = pygame.time.Clock()
     isWorking=True
     speedXL, speedXR, speedYU, speedYD = -10, 10, -10, 10
     previousmove = (0,0)
 
-    bulletz = GameObject.BulletGroup()
+    DialogTextBox = TBaloon.RPGLikeTextDialog('res/Fonts/Pixelplay.ttf', 30, (600, 120))
+    DialogTextBox.set_border_sprites(dialog_sprt['d2'], dialog_sprt['d1'], dialog_sprt['d2'])
+    # инициализация текста
+    pygame.font.init()
+    Scenario_Text = Parcer.TextParce.SimpleParceText('res/Text/ScenarioFile')
+    TT = TBaloon.TextConstructOnOnePage('res/Fonts/Pixelplay.ttf', 30)
+    #Scenario_Text.get_dialog('0')
+    TT.set_text(Scenario_Text.get_dialog('1'), color='#00FF00')
 
     while (isWorking):
         FPS.tick(60)
@@ -66,6 +77,7 @@ def main():
             b = GameObject.Bullet(Tank, 5, 5)
             b.set_direction_and_speed(previousmove[0], previousmove[1],2)
             bulletz.add(b)
+            TT.set_text(Scenario_Text.dictShow['2'], color='#FF00FF')
             # Выстрел лазера необходимо перпеписать ввиду размеров видимого экрана
             #laser = GameObject.LaserShooting(Tank)
             #laser.shoot(previousmove, (2, 800))
@@ -77,7 +89,8 @@ def main():
         playerG.draw(screen)
         bulletz.deleteBullet(display_size[0], display_size[1], spritesG)
         bulletz.draw(screen)
-
+        TT.draw(screen, (10,10), 750)
+        DialogTextBox.draw (screen)
         pygame.display.flip()
 
 if __name__ == '__main__':

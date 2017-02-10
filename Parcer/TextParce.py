@@ -1,20 +1,26 @@
+# coding: utf-8
 import re
 
-class ParceText (object):
+class SimpleParceText (object):
     def __init__(self, text_file):
-        try:
-            self.text = open(text_file,'r')
-        except:
-            raise IOError ('file '+text_file +'does not exisit')
+        text = open(text_file, 'r')
+        self.dictShow={}
+        for line in text:
+            line = line.replace('\n', '').replace('\t', '')
+            match = re.match('([0-9]+)[ =]+(.+)', line, re.U)
+            if match is not None:
+                self.dictShow[match.group(1)]= match.group(2).split('|')
+    def get_dialog(self, key):
+        return self.dictShow[key]
 
-        dialogDict = {}
-        dictKey = ''
-        for line in self.text:
-            header = re.match('\!(.+)\!', line)
-            if header != None:
-                dictKey = header.group(1)
-                dialogDict [dictKey] = []
-            elif dictKey !='':
-                dialogDict[dictKey].append (line)
-        print dialogDict
-ParceText('../res/Text/SaySomething')
+class SimpleParceTextForRPGLikeDialog (object):
+    def __init__(self, text_file):
+        text = open(text_file, 'r')
+        self.dictShow={}
+        for line in text:
+            line = line.replace('\n', '').replace('\t', '')
+            match = re.match('([0-9]+)[ =]+(.+)', line, re.U)
+            if match is not None:
+                self.dictShow[match.group(1)]= match.group(2)
+    def get_dialog(self, key):
+        return self.dictShow[key]

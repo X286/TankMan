@@ -20,8 +20,11 @@ a = (0,0, 47, 47, sprites_src0);
 b = (0,0, 47, 47, sprites_src1);
 c = (0,0, 47, 47, sprites_src2);
 
-!text_baloon_sprt_bg!
-a = (0,0, 800, 100, sprites_src0)
-
+!dialog!
+d1_src = 'res/sprite/DialogPipe.png';
+d2_src = 'res/sprite/DialogCorner.png';
+d1 = (d1_src);
+d2 = (d2_src);
+d3 = (d2_src);
 !animation!
 PlayerLeft = (a:30,b:30,c:15); # где 30 15 милисекунды
