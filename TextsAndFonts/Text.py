@@ -35,26 +35,64 @@ class RPGLikeTextDialog (TextObject):
     def __init__(self, fpath, fsize, boxSize):
         super(RPGLikeTextDialog, self).__init__(fpath, fsize)
         self.boxSize = boxSize
-        self.corner, self.line, self.lap = [], [], []
+        self.corner, self.line, self.empty = [], [], []
     #Вводим угол, вертикальный спрайт, горизонтальный спрайт, перемычку
 
-    def set_border_sprites (self, cornerlst, linelst, laplst):
+    def set_border_sprites(self, cornerlst, linelst, laplst):
         self.corner = cornerlst
         self.line = linelst
-        self.lap = laplst
+        self.empty = laplst
 
-    def construct_upperline (self, strtpos):
-        group = BaseO.UniteSprite ()
-        sprt = BaseO.StaticSprite (strtpos[0], strtpos[1], self.corner.get_width(), self.corner.get_height(), color='#000000')
-        sprt.setSurface(self.corner)
-        strtpos[0] += self.corner.get_width()
-        group.add(sprt)
-        for k in range (0, self.boxSize[0]-2*self.line.get_width(), self.line.get_width()):
-            sprt = BaseO.StaticSprite(strtpos[0], strtpos[1], self.corner.get_width(), self.corner.get_height(), color='#000000')
-            sprt.setSurface(self.line)
-            strtpos[0] += self.corner.get_width()
-            group.add(sprt)
+    def construct_TBaloon(self, strtpos):
+        group = BaseO.UniteSprite()
+        for y in range(strtpos[1], self.boxSize[1]+strtpos[1], self.empty.get_height()):
+            if y == strtpos[1]: #Это первая строка
+                for x in range(strtpos[0], self.boxSize[0]+strtpos[0], self.empty.get_width()):
+                    if x  == strtpos[0]:
+                        sprt = BaseO.StaticSprite(x,y,self.empty.get_width(), self.empty.get_height(), color='#000000')
+                        sprt.setSurface(self.corner)
+                        group.add(sprt)
+                    elif x == self.boxSize[0]+strtpos[0]-self.empty.get_width():
+                        sprt = BaseO.StaticSprite(x, y, self.empty.get_width(), self.empty.get_height(), color='#000000')
+                        sprt.setSurface(pygame.transform.rotate(self.corner, -90))
+                        group.add(sprt)
+                    else:
+                        sprt = BaseO.StaticSprite(x, y, self.empty.get_width(), self.empty.get_height(), color='#000000')
+                        sprt.setSurface(self.line)
+                        group.add(sprt)
+            elif y == self.boxSize[1]+strtpos[1] - self.empty.get_height():
+                for x in range(strtpos[0], self.boxSize[0]+strtpos[0], self.empty.get_width()):
+                    if x == strtpos[0]:
+                        sprt = BaseO.StaticSprite(x, y, self.empty.get_width(), self.empty.get_height(),
+                                                  color='#000000')
+                        sprt.setSurface(pygame.transform.rotate(self.corner, 90))
+                        group.add(sprt)
+                    elif x == self.boxSize[0]+strtpos[0] - self.empty.get_width():
+                        sprt = BaseO.StaticSprite(x, y, self.empty.get_width(), self.empty.get_height(),
+                                                  color='#000000')
+                        sprt.setSurface(pygame.transform.rotate(self.corner, -180))
+                        group.add(sprt)
+                    else:
+                        sprt = BaseO.StaticSprite(x, y, self.empty.get_width(), self.empty.get_height(),
+                                                  color='#000000')
+                        sprt.setSurface(pygame.transform.rotate(self.line, 180))
+                        group.add(sprt)
+            else:
+                for x in range(strtpos[0], self.boxSize[0]+strtpos[0], self.empty.get_width()):
+                    if x == strtpos[0]:
+                        sprt = BaseO.StaticSprite(x, y, self.empty.get_width(), self.empty.get_height(),
+                                                  color='#000000')
+                        sprt.setSurface(pygame.transform.rotate(self.line,90))
+                        group.add(sprt)
+                    elif x == self.boxSize[0]+strtpos[0] - self.empty.get_width():
+                        sprt = BaseO.StaticSprite(x, y, self.empty.get_width(), self.empty.get_height(),color='#000000')
+                        sprt.setSurface(pygame.transform.rotate(self.line, -90))
+                        group.add(sprt)
+                    else:
+                        sprt = BaseO.StaticSprite(x, y, self.empty.get_width(), self.empty.get_height(),
+                                                  color='#000000')
+                        sprt.setSurface(self.empty)
+                        group.add(sprt)
         return group
     def draw (self, screen):
-        self.construct_upperline([20, 450]).draw(screen)
-        #screen.blit (self.corner, (150, 150))
+        self.construct_TBaloon([60, 30]).draw(screen)

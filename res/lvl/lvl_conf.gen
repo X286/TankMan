@@ -23,8 +23,9 @@ c = (0,0, 47, 47, sprites_src2);
 !dialog!
 d1_src = 'res/sprite/DialogPipe.png';
 d2_src = 'res/sprite/DialogCorner.png';
+d3_src = 'res/sprite/DialogEmpty.png';
 d1 = (d1_src);
 d2 = (d2_src);
-d3 = (d2_src);
+d3 = (d3_src);
 !animation!
 PlayerLeft = (a:30,b:30,c:15); # где 30 15 милисекунды

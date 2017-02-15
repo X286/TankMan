@@ -33,8 +33,8 @@ def main():
     speedXL, speedXR, speedYU, speedYD = -10, 10, -10, 10
     previousmove = (0,0)
 
-    DialogTextBox = TBaloon.RPGLikeTextDialog('res/Fonts/Pixelplay.ttf', 30, (600, 120))
-    DialogTextBox.set_border_sprites(dialog_sprt['d2'], dialog_sprt['d1'], dialog_sprt['d2'])
+    DialogTextBox = TBaloon.RPGLikeTextDialog('res/Fonts/Pixelplay.ttf', 30, (600, 300))
+    DialogTextBox.set_border_sprites(dialog_sprt['d2'], dialog_sprt['d1'], dialog_sprt['d3'])
     # инициализация текста
     pygame.font.init()
     Scenario_Text = Parcer.TextParce.SimpleParceText('res/Text/ScenarioFile')
@@ -89,7 +89,7 @@ def main():
         playerG.draw(screen)
         bulletz.deleteBullet(display_size[0], display_size[1], spritesG)
         bulletz.draw(screen)
-        TT.draw(screen, (10,10), 750)
+        TT.draw(screen, (40,400), 750)
         DialogTextBox.draw (screen)
         pygame.display.flip()
 
