@@ -33,14 +33,18 @@ def main():
     speedXL, speedXR, speedYU, speedYD = -10, 10, -10, 10
     previousmove = (0,0)
 
-    DialogTextBox = TBaloon.RPGLikeTextDialog('res/Fonts/Pixelplay.ttf', 30, (600, 300))
+    Scenario_Text = Parcer.TextParce.SimpleParceText('res/Text/ScenarioFile')
+
+    DialogTextBox = TBaloon.RPGLikeTextDialog('res/Fonts/Pixelplay.ttf', 30, (790, 200))
     DialogTextBox.set_border_sprites(dialog_sprt['d2'], dialog_sprt['d1'], dialog_sprt['d3'])
+    DialogTextBox.setDialogpos(5, 400)
+    DialogTextBox.setText(Scenario_Text.get_dialog('1'), '#00FF00')
     # инициализация текста
     pygame.font.init()
-    Scenario_Text = Parcer.TextParce.SimpleParceText('res/Text/ScenarioFile')
-    TT = TBaloon.TextConstructOnOnePage('res/Fonts/Pixelplay.ttf', 30)
+
+    #TT = TBaloon.TextConstructOnOnePage('res/Fonts/Pixelplay.ttf', 30)
     #Scenario_Text.get_dialog('0')
-    TT.set_text(Scenario_Text.get_dialog('1'), color='#00FF00')
+    #TT.set_text(Scenario_Text.get_dialog('1'), color='#00FF00')
 
     while (isWorking):
         FPS.tick(60)
@@ -84,13 +88,14 @@ def main():
             #print pygame.sprite.groupcollide(Graphics.BaseObj.UniteSprite(laser), spritesG, False, False)
             #laser.draw(screen)
 
+
         tile_lvl.draw(screen)
         spritesG.draw(screen)
         playerG.draw(screen)
         bulletz.deleteBullet(display_size[0], display_size[1], spritesG)
         bulletz.draw(screen)
-        TT.draw(screen, (40,400), 750)
-        DialogTextBox.draw (screen)
+        #TT.draw(screen, (40, 400), 750)
+        DialogTextBox.draw(screen)
         pygame.display.flip()
 
 if __name__ == '__main__':
