@@ -38,8 +38,9 @@ class RPGLikeTextDialog (TextObject):
         self.dialog_gr = ''
         self.text_g = ''
         self.offset = [10, 10]
-    #Вводим угол, вертикальный спрайт, горизонтальный спрайт, перемычку
+        self.baloon_image = None
 
+    # Вводим угол, вертикальный спрайт, горизонтальный спрайт, перемычку
     def set_border_sprites(self, cornerlst, linelst, laplst):
         self.corner = cornerlst
         self.line = linelst
@@ -49,10 +50,9 @@ class RPGLikeTextDialog (TextObject):
 
     def setDialogpos (self, x, y):
         self.pos = [x, y]
-        self.dialog_gr = self.construct_TBaloon ((x, y))
+        self.dialog_gr = self.construct_TBaloon((x, y))
 
     def setText (self, scenario, textColor):
-
         splitted = scenario[0].decode('UTF-8').split('\\')
         self.text_g = BaseO.UniteSprite()
         for line in splitted:
@@ -60,16 +60,36 @@ class RPGLikeTextDialog (TextObject):
             renderedSurface = self.render(line, True, pygame.Color(textColor))
             if renderedSurface.get_width() > self.boxSize[0]-2*self.offset[0] - self.pos[0]:
                 # определяем что есть длинная линия
-                print 'big line!\n', line, len(line), renderedSurface.get_width()
                 splitted_line = line.split(' ')
-                print splitted_line[0]
-
+                line, count = u'', 0
+                for wordcount, word in enumerate(splitted_line):
+                    if count == 0:
+                        line +=word
+                        count +=1
+                    else:
+                        line += u' '+word
+                    if wordcount+1 < len(splitted_line):
+                        if self.render (line + splitted_line[wordcount+1], True, pygame.Color(textColor)).get_width() > self.boxSize[0]-self.offset[0]:
+                            cence = BaseO.StaticSprite(self.pos[0] + self.offset[0], self.pos[1] + self.offset[1],
+                                                      self.boxSize[0] - self.offset[0],
+                                                      self.boxSize[1] - self.offset[1], ('#000000'))
+                            cence.setSurface(self.render(line, True, pygame.Color(textColor)))
+                            line = u''
+                            count = 0
+                            self.text_g.add(cence)
+                            self.pos[1] += self.fsize
+                cence = BaseO.StaticSprite(self.pos[0] + self.offset[0], self.pos[1] + self.offset[1],
+                                           self.boxSize[0] - self.offset[0],
+                                           self.boxSize[1] - self.offset[1], ('#000000'))
+                cence.setSurface(self.render(line, True, pygame.Color(textColor)))
+                self.text_g.add(cence)
+                self.pos[1]+=self.fsize
 
             else:
                 text.setSurface(renderedSurface)
                 self.text_g.add(text)
                 self.pos[1] += self.fsize
-            #print len(scenario[0].decode('UTF-8')), text.image.get_width(), self.boxSize[0]-2*self.offset[0] - self.pos[0], text.image.get_width()
+
 
 
 
@@ -116,10 +136,10 @@ class RPGLikeTextDialog (TextObject):
                     if x == strtpos[0]:
                         sprt = BaseO.StaticSprite(x, y, self.empty.get_width(), self.empty.get_height(),
                                                   color='#000000')
-                        sprt.setSurface(pygame.transform.rotate(self.line,90))
+                        sprt.setSurface(pygame.transform.rotate(self.line, 90))
                         group.add(sprt)
                     elif x == self.boxSize[0]+strtpos[0] - self.empty.get_width():
-                        sprt = BaseO.StaticSprite(x, y, self.empty.get_width(), self.empty.get_height(),color='#000000')
+                        sprt = BaseO.StaticSprite(x, y, self.empty.get_width(), self.empty.get_height(), color='#000000')
                         sprt.setSurface(pygame.transform.rotate(self.line, -90))
                         group.add(sprt)
                     else:
@@ -131,4 +151,4 @@ class RPGLikeTextDialog (TextObject):
 
     def draw(self, screen):
         self.dialog_gr.draw(screen)
-        self.text_g.draw (screen)
+        self.text_g.draw(screen)

@@ -15,9 +15,20 @@ def main():
     # Указываем размер сцены
     bg = GameObject.Static_BG(0, 0, 2683, 1059)
     # Инициализация игрока
-    Tank = GameObject.Player(50, 50, 50, 50)
+    Tank = GameObject.Player(100, 100, 40, 40)
     Tank.LoadImage('res\sprite\up.png')
+    surf = pygame.transform.scale(Tank.image, (38,38))
+    Tank.setSurface(surf)
     playerG = Graphics.BaseObj.UniteSprite(Tank)
+
+    # Враг
+    Enemy = GameObject.Enemy(50, 189, 50, 50, color='#000000')
+    Enemy.LoadImage('res\sprite\left.png')
+    surf = pygame.transform.scale(Enemy.image, (45, 45))
+    Enemy.setSurface(surf)
+    EnemyG = Graphics.BaseObj.UniteSprite(Enemy)
+
+
     tile_lvl = LvlBuild.JustDoMyTileLevel('res/lvl/lvl1.gen', 'res/lvl/lvl_conf.gen').Build_lvl('tiles', 'prepare',
                                                                                                'tile_size')
     spritesG = LvlBuild.JustPlaceMySpritesOnLevel('res/lvl/lvl_conf.gen', 'sprites', 'prepare').PlaceSptites('res/lvl/lvl1_sprt.gen',
@@ -26,7 +37,7 @@ def main():
     dialog_sprt = LvlBuild.JustPlaceMySpritesOnLevel('res/lvl/lvl_conf.gen', 'dialog', 'prepare').sprites
 
     bulletz = GameObject.BulletGroup()
-    scrolling = Mech.Mech.ScrollingSimple(Tank, pygame.Rect(50, 50, 640, 480), bg, screen, [tile_lvl, spritesG, bulletz])
+    scrolling = Mech.Mech.ScrollingSimple(Tank, pygame.Rect(100, 100, 540, 380), bg, screen, [tile_lvl, spritesG, bulletz])
     pygame.init()
     FPS = pygame.time.Clock()
     isWorking=True
@@ -48,6 +59,7 @@ def main():
 
     while (isWorking):
         FPS.tick(60)
+
         key = pygame.key.get_pressed()
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -81,21 +93,25 @@ def main():
             b = GameObject.Bullet(Tank, 5, 5)
             b.set_direction_and_speed(previousmove[0], previousmove[1],2)
             bulletz.add(b)
-            TT.set_text(Scenario_Text.dictShow['2'], color='#FF00FF')
+            #TT.set_text(Scenario_Text.dictShow['2'], color='#FF00FF')
             # Выстрел лазера необходимо перпеписать ввиду размеров видимого экрана
-            #laser = GameObject.LaserShooting(Tank)
-            #laser.shoot(previousmove, (2, 800))
-            #print pygame.sprite.groupcollide(Graphics.BaseObj.UniteSprite(laser), spritesG, False, False)
-            #laser.draw(screen)
+            laser = GameObject.LaserShooting(Tank)
+            laser.shoot(previousmove, (2, 800))
+            laser.draw(screen)
 
 
         tile_lvl.draw(screen)
         spritesG.draw(screen)
         playerG.draw(screen)
+        #EnemyG.draw(screen)
+
+
+
         bulletz.deleteBullet(display_size[0], display_size[1], spritesG)
         bulletz.draw(screen)
+
         #TT.draw(screen, (40, 400), 750)
-        DialogTextBox.draw(screen)
+        #DialogTextBox.draw(screen)
         pygame.display.flip()
 
 if __name__ == '__main__':

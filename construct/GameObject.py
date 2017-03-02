@@ -4,6 +4,7 @@ import Graphics.BaseObj as Graphics # Вкорячиваем часть граф
 import Mech.Mech as Mech #Вкорячиваем механику
 import pygame
 
+
 class Static_BG (Graphics.GraphicObject):
     def __init__(self, Gx, Gy, GW, GH, color='#ffff00'):
         Graphics.GraphicObject.__init__(self, Gx, Gy, GW, GH, color=color)
@@ -114,7 +115,9 @@ class BulletGroup(Graphics.UniteSprite):
             screen.blit(sprt.image, (sprt.rect.x, sprt.rect.y))
 
 
-class Enemy(object): pass
-
+class Enemy(Player):
+    def __init__(self, Gx, Gy, GW, GH, color='#00ffff'):
+        super(Enemy, self).__init__(Gx,Gy,GW,GH, color=color)
+        self.dxdy = (1, 0)
 
 

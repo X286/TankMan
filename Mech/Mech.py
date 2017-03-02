@@ -37,9 +37,7 @@ class Collides (object):
                     for key in collide_g.keys():
                         for sprt in collide_g[key]:
                             key.rect.bottom = sprt.rect.top
-    @staticmethod
-    def shooting_collide (tdxdy, G1, G2, DoKill1, DoKill2):
-        pass
+        return collide_g
 # Прокрутка.
 # 1 - pygame.Rect - прямоугольник в котором не происходит скроллинга
 # 2 - pygame.Rect - текущая сцена на вход можно подать sprite (а так же его наследников) или rect
@@ -60,6 +58,7 @@ class ScrollingSimple (object):
         if self.ssize.rect.right - self.ssize.rect.width > self.ssize.rect.width:
             if self.scr_sprite.rect.right > self.screen.right:
                 self.scr_sprite.rect.right = self.screen.right
+
         elif self.scr_sprite.rect.right > self.srect.right:
             self.scr_sprite.rect.right = self.srect.right
             for group in self.other:
@@ -70,7 +69,7 @@ class ScrollingSimple (object):
     def scroll_left(self, scrolldierct):
         if self.scr_sprite.rect.left < self.srect.left:
             self.ssize.rect.x += scrolldierct[0]
-            if self.ssize.rect.left <= self.screen.left:
+            if self.ssize.rect.left < self.screen.left:
                 self.ssize.rect.left = self.screen.left
                 if self.scr_sprite.rect.left < self.screen.left:
                     self.scr_sprite.rect.left = self.screen.left
@@ -83,7 +82,7 @@ class ScrollingSimple (object):
     def scroll_up(self, scrolldierct):
         if self.scr_sprite.rect.top < self.srect.top:
             self.ssize.rect.y += scrolldierct[1]
-            if self.ssize.rect.top <= self.screen.top:
+            if self.ssize.rect.top < self.screen.top:
                 self.ssize.rect.top = self.screen.top
                 if self.scr_sprite.rect.top < self.screen.top:
                     self.scr_sprite.rect.top = self.screen.top
@@ -97,7 +96,6 @@ class ScrollingSimple (object):
         if self.ssize.rect.height - self.screen.height < self.ssize.rect.top:
             if self.screen.bottom < self.scr_sprite.rect.bottom:
                 self.scr_sprite.rect.bottom = self.screen.bottom
-
         elif self.srect.bottom < self.scr_sprite.rect.bottom:
             self.scr_sprite.rect.bottom = self.srect.bottom
             self.ssize.rect.y += scrolldierct[1]

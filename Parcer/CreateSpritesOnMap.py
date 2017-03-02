@@ -28,12 +28,17 @@ class CreateSptitesOnMap(object):
             elif line == ']':
                 closedSprites += 1
             else:
+                line = line.replace('\n', '')
+                line = line.replace('\t', '')
+                line = line.replace(' ', '')
                 mached = re.match('(([a-zA-Z][a-zA-Z0-9]*)\{([0-9]+),([0-9]+)\}[,;])+', line)
-                #print mached.group(0)
-                if not self.sptitedict[currentkey].has_key(mached.group(2)):
-                    self.sptitedict[currentkey][mached.group(2)] = [(tile_size[0]*int(mached.group(3)), tile_size[1]*int(mached.group(4)))]
-                else:
-                    self.sptitedict[currentkey][mached.group(2)].append ((tile_size[0]*int(mached.group(3)), tile_size[1]*int(mached.group(4))))
+                if mached != None:
+                    for item in mached.group(0)[:-1].split(';'):
+                        sprt = re.match('([a-zA-Z0-9][a-zA-Z0-9]*)\{([0-9]+),([0-9]+)\}', item)
+                        if not self.sptitedict[currentkey].has_key(sprt.group(1)):
+                            self.sptitedict[currentkey][sprt.group(1)]= [(tile_size[0]*int(sprt.group(2)), tile_size[1]*int(sprt.group(3)))]
+                        else:
+                            self.sptitedict[currentkey][sprt.group(1)].append ((tile_size[0]*int(sprt.group(2)), tile_size[1]*int(sprt.group(3))))
 
         if openedSprites != closedSprites:
             raise SyntaxError('cloded or opened tag ] [!text! messed!')
