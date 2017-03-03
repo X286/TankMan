@@ -120,4 +120,19 @@ class Enemy(Player):
         super(Enemy, self).__init__(Gx,Gy,GW,GH, color=color)
         self.dxdy = (1, 0)
 
+    def move_to_player (self, playersprt, screen):
+        if self.rect.center != playersprt.rect.center:
+            direction = [0,0]
+            if self.rect.centerx > playersprt.rect.centerx:
+                direction[0] = -1
+            elif self.rect.centerx < playersprt.rect.centerx:
+                direction[0] = 1
+            if self.rect.centery > playersprt.rect.centery:
+                direction[1] = -1
+            elif self.rect.centery < playersprt.rect.centery:
+                direction[1] = 1
+            self.dxdy = (direction[0], direction[1])
+            alarm_rect = pygame.draw.circle(screen, pygame.Color('#00FF00'), (self.rect.centerx, self.rect.centery), 150, 3)
+            if alarm_rect.colliderect(playersprt.rect) == 1:
+                self.move (direction[0], direction[1])
 

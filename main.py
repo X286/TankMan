@@ -22,11 +22,14 @@ def main():
     playerG = Graphics.BaseObj.UniteSprite(Tank)
 
     # Враг
-    Enemy = GameObject.Enemy(50, 189, 50, 50, color='#000000')
-    Enemy.LoadImage('res\sprite\left.png')
-    surf = pygame.transform.scale(Enemy.image, (45, 45))
-    Enemy.setSurface(surf)
-    EnemyG = Graphics.BaseObj.UniteSprite(Enemy)
+    EnemyG = Graphics.BaseObj.UniteSprite()
+    for k in range(0,5):
+        Enemy = GameObject.Enemy(k*10*50, 189, 50, 50, color='#000000')
+        Enemy.LoadImage('res\sprite\left.png')
+        surf = pygame.transform.scale(Enemy.image, (45, 45))
+        Enemy.setSurface(surf)
+        EnemyG.add(Enemy)
+
 
 
     tile_lvl = LvlBuild.JustDoMyTileLevel('res/lvl/lvl1.gen', 'res/lvl/lvl_conf.gen').Build_lvl('tiles', 'prepare',
@@ -37,11 +40,12 @@ def main():
     dialog_sprt = LvlBuild.JustPlaceMySpritesOnLevel('res/lvl/lvl_conf.gen', 'dialog', 'prepare').sprites
 
     bulletz = GameObject.BulletGroup()
-    scrolling = Mech.Mech.ScrollingSimple(Tank, pygame.Rect(100, 100, 540, 380), bg, screen, [tile_lvl, spritesG, bulletz])
+    scrolling = Mech.Mech.ScrollingSimple(Tank, pygame.Rect(100, 100, 540, 380), bg, screen, [tile_lvl, spritesG, bulletz, EnemyG])
+
     pygame.init()
     FPS = pygame.time.Clock()
     isWorking=True
-    speedXL, speedXR, speedYU, speedYD = -10, 10, -10, 10
+    speedXL, speedXR, speedYU, speedYD = -2, 2, -2, 2
     previousmove = (0,0)
 
     Scenario_Text = Parcer.TextParce.SimpleParceText('res/Text/ScenarioFile')
@@ -102,8 +106,12 @@ def main():
 
         tile_lvl.draw(screen)
         spritesG.draw(screen)
+
         playerG.draw(screen)
-        #EnemyG.draw(screen)
+        print Mech.Mech.Collides.collide_walls(Enemy.dxdy, EnemyG, spritesG, False,False)
+        for z in EnemyG:
+            z.move_to_player(Tank, screen)
+        EnemyG.draw(screen)
 
 
 
