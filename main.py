@@ -23,12 +23,12 @@ def main():
 
     # Враг
     EnemyG = Graphics.BaseObj.UniteSprite()
-    for k in range(0,5):
-        Enemy = GameObject.Enemy(k*10*50, 189, 50, 50, color='#000000')
-        Enemy.LoadImage('res\sprite\left.png')
-        surf = pygame.transform.scale(Enemy.image, (45, 45))
-        Enemy.setSurface(surf)
-        EnemyG.add(Enemy)
+
+    Enemy = GameObject.Enemy(423, 423, 50, 50, color='#000000')
+    Enemy.LoadImage('res\sprite\left.png')
+    surf = pygame.transform.scale(Enemy.image, (45, 45))
+    Enemy.setSurface(surf)
+    EnemyG.add(Enemy)
 
 
 
@@ -108,18 +108,14 @@ def main():
         spritesG.draw(screen)
 
         playerG.draw(screen)
-        print Mech.Mech.Collides.collide_walls(Enemy.dxdy, EnemyG, spritesG, False,False)
-        for z in EnemyG:
-            z.move_to_player(Tank, screen)
+        for enemy in EnemyG:
+            dxdy = enemy.move_to_player(Tank,  10, screen)
+            Mech.Mech.Collides.collide_walls(dxdy, EnemyG, spritesG, False, False)
         EnemyG.draw(screen)
-
-
 
         bulletz.deleteBullet(display_size[0], display_size[1], spritesG)
         bulletz.draw(screen)
 
-        #TT.draw(screen, (40, 400), 750)
-        #DialogTextBox.draw(screen)
         pygame.display.flip()
 
 if __name__ == '__main__':
